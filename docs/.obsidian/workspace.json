@@ -1,0 +1,200 @@
+{
+  "main": {
+    "id": "557ae9ef20603fd1",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d40e1a17df89f41",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e943ce0ae5ea8746",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "final-whistle-spec-coding.md",
+                "mode": "preview",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "final-whistle-spec-coding"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "be6a185e398328b9",
+    "type": "split",
+    "children": [
+      {
+        "id": "bf46886dfe588ee5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e29a1398f84e2f52",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "64f09a55f35260dc",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "426a621e05fbc572",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "17a92463a0ea9a3d",
+    "type": "split",
+    "children": [
+      {
+        "id": "de6a91cb80a9f21e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d08b5a7939951435",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "final-whistle-spec-coding.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "final-whistle-spec-coding 的反向链接列表"
+            }
+          },
+          {
+            "id": "5573092e6bfe6fe4",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "final-whistle-spec-coding.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "final-whistle-spec-coding 的出链列表"
+            }
+          },
+          {
+            "id": "761fa8294d05e471",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "cf9fbef938e6b6cf",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "98a10bcf6abcf7ab",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "final-whistle-spec-coding.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "final-whistle-spec-coding 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "e943ce0ae5ea8746",
+  "lastOpenFiles": [
+    "final-whistle-v1-spec.md",
+    "final-whistle-technical-design-main.md",
+    "final-whistle-technical-design-go-gin-v2.md",
+    "final-whistle-spec-coding.md",
+    "final-whistle-development-plan.md",
+    "final-whistle-api-dto-draft.md",
+    "final-whistle-milestones.md",
+    "final-whistle-review.md",
+    "final-whistle-prd.md",
+    "final-whistle-schema-draft.md",
+    "final-whistle-technical-design-go-gin.md"
+  ]
+}
