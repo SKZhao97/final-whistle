@@ -1,10 +1,60 @@
-export default function MatchesPage() {
+import Link from "next/link";
+
+import { matchesApi } from "@/lib/api/client";
+import type { MatchListResponse } from "@/types/api";
+
+export default async function MatchesPage() {
+  const data = await matchesApi.list<MatchListResponse>(
+    { page: 1, pageSize: 20 },
+    { cache: "no-store" },
+  );
+
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">Matches</h1>
-      <p className="text-gray-600 dark:text-gray-400">
-        This page will display a list of football matches. Coming soon.
-      </p>
+    <div className="py-8">
+      <div className="mb-8 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Matches</h1>
+          <p className="mt-2 text-sm text-neutral-600">
+            Browse seeded football matches and open the public detail view.
+          </p>
+        </div>
+        <p className="text-sm text-neutral-500">{data.total} total matches</p>
+      </div>
+
+      {data.items.length === 0 ? (
+        <div className="rounded-xl border border-dashed p-8 text-sm text-neutral-600">
+          No matches are available yet.
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {data.items.map((match) => (
+            <Link
+              key={match.id}
+              href={`/matches/${match.id}`}
+              className="rounded-xl border p-5 transition-colors hover:bg-neutral-50"
+            >
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">
+                    {match.competition} · {match.season}
+                  </p>
+                  <h2 className="mt-1 text-xl font-semibold">
+                    {match.homeTeam.name} {typeof match.homeScore === "number" ? match.homeScore : "-"}:
+                    {typeof match.awayScore === "number" ? match.awayScore : "-"} {match.awayTeam.name}
+                  </h2>
+                  <p className="mt-1 text-sm text-neutral-600">
+                    {match.round ?? "Round TBD"} · {new Date(match.kickoffAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="text-sm text-neutral-600">
+                  <p>Check-ins: {match.aggregates.checkInCount}</p>
+                  <p>Avg rating: {match.aggregates.matchRatingAvg ?? "No samples"}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

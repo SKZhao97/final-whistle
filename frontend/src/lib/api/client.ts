@@ -94,3 +94,38 @@ export const api = {
   delete: <T = unknown>(endpoint: string, options?: RequestInit) =>
     apiRequest<T>(endpoint, { ...options, method: "DELETE" }),
 };
+
+type MatchListQuery = {
+  competition?: string;
+  season?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+function withQuery(path: string, query?: Record<string, string | number | undefined>) {
+  const params = new URLSearchParams();
+  Object.entries(query ?? {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") {
+      params.set(key, String(value));
+    }
+  });
+  const queryString = params.toString();
+  return queryString ? `${path}?${queryString}` : path;
+}
+
+export const matchesApi = {
+  list: <T = unknown>(query?: MatchListQuery, options?: RequestInit) =>
+    api.get<T>(withQuery("/matches", query), options),
+  detail: <T = unknown>(matchId: string | number, options?: RequestInit) =>
+    api.get<T>(`/matches/${matchId}`, options),
+};
+
+export const teamsApi = {
+  detail: <T = unknown>(teamId: string | number, options?: RequestInit) =>
+    api.get<T>(`/teams/${teamId}`, options),
+};
+
+export const playersApi = {
+  detail: <T = unknown>(playerId: string | number, options?: RequestInit) =>
+    api.get<T>(`/players/${playerId}`, options),
+};

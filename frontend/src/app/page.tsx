@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center py-12">
@@ -11,18 +13,18 @@ export default function Home() {
           and build your personal football memory archive.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/matches"
             className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Browse Matches
-          </a>
-          <a
+          </Link>
+          <Link
             href="/me"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             My Profile
-          </a>
+          </Link>
         </div>
         <div className="pt-8 grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
           <div className="space-y-3">

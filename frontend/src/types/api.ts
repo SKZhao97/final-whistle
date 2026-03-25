@@ -1,4 +1,3 @@
-// Base response envelope
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -9,119 +8,141 @@ export interface ApiResponse<T = unknown> {
   };
 }
 
-// Error codes
 export type ApiErrorCode =
-  | 'VALIDATION_ERROR'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'CONFLICT'
-  | 'INTERNAL_ERROR';
+  | "VALIDATION_ERROR"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "NOT_FOUND"
+  | "CONFLICT"
+  | "INTERNAL_ERROR";
 
-// Pagination
-export interface PaginatedResponse<T> {
-  items: T[];
-  page: number;
-  pageSize: number;
-  total: number;
-}
-
-// Common filters
 export interface PaginationParams {
   page?: number;
   pageSize?: number;
 }
 
-export interface User {
+export interface TeamSummary {
   id: number;
   name: string;
-  email: string;
-  avatarUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Enums from backend
-export enum MatchStatus {
-  SCHEDULED = 'SCHEDULED',
-  FINISHED = 'FINISHED',
-}
-
-export enum WatchedType {
-  FULL = 'FULL',
-  PARTIAL = 'PARTIAL',
-  HIGHLIGHTS = 'HIGHLIGHTS',
-}
-
-export enum SupporterSide {
-  HOME = 'HOME',
-  AWAY = 'AWAY',
-  NEUTRAL = 'NEUTRAL',
-}
-
-// Core entities
-export interface Team {
-  id: number;
-  name: string;
-  shortName: string;
+  shortName?: string;
   slug: string;
   logoUrl?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface Player {
+export interface UserSummary {
   id: number;
-  teamId: number;
+  name: string;
+  avatarUrl?: string;
+}
+
+export interface TagSummary {
+  id: number;
   name: string;
   slug: string;
-  position?: string;
-  avatarUrl?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface Match {
+export interface MatchAggregateSummary {
+  matchRatingAvg: number | null;
+  homeTeamRatingAvg: number | null;
+  awayTeamRatingAvg: number | null;
+  checkInCount: number;
+}
+
+export interface MatchListItem {
   id: number;
   competition: string;
   season: string;
   round?: string;
-  status: MatchStatus;
+  status: string;
   kickoffAt: string;
-  homeTeamId: number;
-  awayTeamId: number;
+  homeTeam: TeamSummary;
+  awayTeam: TeamSummary;
   homeScore?: number;
   awayScore?: number;
-  venue?: string;
-  createdAt: string;
-  updatedAt: string;
+  aggregates: MatchAggregateSummary;
 }
 
-export interface MatchPlayer {
-  id: number;
-  matchId: number;
-  playerId: number;
-  teamId: number;
+export interface MatchListResponse {
+  items: MatchListItem[];
+  page: number;
+  pageSize: number;
+  total: number;
 }
 
-export interface Tag {
+export interface PlayerSummary {
   id: number;
   name: string;
   slug: string;
-  sortOrder: number;
-  isActive: boolean;
+  position?: string;
+  avatarUrl?: string;
+  team: TeamSummary;
 }
 
-export interface CheckInTag {
-  id: number;
-  checkInId: number;
-  tagId: number;
+export interface MatchPlayerRatingSummary {
+  player: PlayerSummary;
+  avgRating: number | null;
+  ratingCount: number;
 }
 
-export interface Session {
+export interface MatchRecentReview {
   id: number;
-  userId: number;
-  token: string;
-  expiredAt: string;
+  user: UserSummary;
+  matchRating: number;
+  shortReview: string;
+  tags: TagSummary[];
   createdAt: string;
+}
+
+export interface MatchDetail {
+  id: number;
+  competition: string;
+  season: string;
+  round?: string;
+  status: string;
+  kickoffAt: string;
+  homeTeam: TeamSummary;
+  awayTeam: TeamSummary;
+  homeScore?: number;
+  awayScore?: number;
+  venue?: string;
+  aggregates: MatchAggregateSummary;
+  playerRatings: MatchPlayerRatingSummary[];
+  recentReviews: MatchRecentReview[];
+}
+
+export interface TeamRatingSummary {
+  avgRating: number | null;
+  ratingCount: number;
+}
+
+export interface TeamDetail {
+  id: number;
+  name: string;
+  shortName?: string;
+  slug: string;
+  logoUrl?: string;
+  recentMatches: MatchListItem[];
+  ratingSummary: TeamRatingSummary;
+}
+
+export interface PlayerRecentMatch {
+  match: MatchListItem;
+  avgRating: number | null;
+  ratingCount: number;
+}
+
+export interface PlayerRatingSummary {
+  avgRating: number | null;
+  ratingCount: number;
+}
+
+export interface PlayerDetail {
+  id: number;
+  name: string;
+  slug: string;
+  position?: string;
+  avatarUrl?: string;
+  team: TeamSummary;
+  recentMatches: PlayerRecentMatch[];
+  ratingSummary: PlayerRatingSummary;
 }

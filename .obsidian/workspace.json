@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "41159cd0da5f7b4d",
+        "id": "51171a26c81b24a0",
         "type": "tabs",
         "children": [
           {
-            "id": "8f1d6e2aa0c2b312",
+            "id": "4304be54a698effb",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "openspec/changes/spec1-foundation-and-framework/tasks.md",
-                "mode": "preview",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "tasks"
+              "title": "新标签页"
             }
           }
         ]
@@ -183,37 +179,48 @@
       "bases:新建数据库": false
     }
   },
-  "active": "8f1d6e2aa0c2b312",
+  "active": "cba8464a64129569",
   "lastOpenFiles": [
-    "技术方案分析报告.md",
-    "openspec/changes/spec1-foundation-and-framework/tasks.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/backend-framework/spec.md",
-    "docs/final-whistle-technical-design-main.md",
-    "openspec/changes/spec1-foundation-and-framework/proposal.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/database-schema/spec.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/seed-data/spec.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/seed-data",
-    "openspec/changes/spec1-foundation-and-framework/specs/data-models/spec.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/data-models",
-    "openspec/changes/spec1-foundation-and-framework/specs/database-schema",
-    "openspec/changes/spec1-foundation-and-framework/design.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/frontend-framework/spec.md",
-    "openspec/changes/spec1-foundation-and-framework/specs/frontend-framework",
-    "openspec/changes/spec1-foundation-and-framework/specs/backend-framework",
-    "openspec/changes/spec1-foundation-and-framework/specs",
-    "CLAUDE.md",
-    "openspec/changes/spec1-foundation-and-framework",
-    "openspec/specs/auth-session/spec.md",
-    "openspec/config.yaml",
-    "openspec/changes/archive",
-    "openspec/specs",
-    "openspec/specs/user-profile/spec.md",
-    "openspec/specs/match-community-insights/spec.md",
-    "openspec/specs/match-checkin/spec.md",
-    "openspec/specs/match-browsing/spec.md",
-    "docs/final-whistle-prd.md",
-    "docs/final-whistle-milestones.md",
-    "openspec/changes/build-final-whistle-v1-core-loop/specs/profile-archive/spec.md",
-    "openspec/changes/build-final-whistle-v1-core-loop/specs/match-browsing/spec.md"
+    "未命名.md",
+    "backend/cmd/seed/main.go",
+    "backend/cmd/seed",
+    "frontend/src/app/players/[playerId]/page.tsx",
+    "frontend/src/app/players/[playerId]/not-found.tsx",
+    "frontend/src/app/players/[playerId]/loading.tsx",
+    "frontend/src/app/players/[playerId]/error.tsx",
+    "frontend/src/app/players/[playerId]",
+    "frontend/src/app/teams/[teamId]/page.tsx",
+    "frontend/src/app/teams/[teamId]/not-found.tsx",
+    "frontend/src/app/teams/[teamId]/loading.tsx",
+    "docs/final-whistle-data-source-plan.md",
+    "openspec/changes/public-match-browsing/tasks.md",
+    "openspec/changes/public-match-browsing/specs/public-match-browsing/spec.md",
+    "openspec/changes/public-match-browsing/design.md",
+    "openspec/changes/public-match-browsing/proposal.md",
+    "openspec/specs/seed-data/spec.md",
+    "openspec/specs/data-models/spec.md",
+    "openspec/specs/database-schema/spec.md",
+    "openspec/specs/frontend-framework/spec.md",
+    "openspec/specs/backend-framework/spec.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/specs/seed-data/spec.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/specs/frontend-framework/spec.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/specs/database-schema/spec.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/specs/data-models/spec.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/specs/backend-framework/spec.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/tasks.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/proposal.md",
+    "openspec/changes/archive/2026-03-25-spec1-foundation-and-framework/design.md",
+    "spec1-review.md",
+    "frontend/node_modules/prettier/THIRD-PARTY-NOTICES.md",
+    "frontend/node_modules/prettier/README.md",
+    "frontend/node_modules/eslint-plugin-react/README.md",
+    "frontend/node_modules/uri-js/README.md",
+    "frontend/node_modules/es-abstract/README.md",
+    "frontend/node_modules/es-abstract/CHANGELOG.md",
+    "backend/frontend/public/window.svg",
+    "backend/frontend/public/globe.svg",
+    "backend/frontend/public/vercel.svg",
+    "backend/frontend/public/next.svg",
+    "backend/frontend/public/file.svg"
   ]
 }

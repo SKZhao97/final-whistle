@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"final-whistle/backend/internal/handler"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,8 @@ import (
 	"final-whistle/backend/internal/config"
 	"final-whistle/backend/internal/db"
 	"final-whistle/backend/internal/middleware"
+	"final-whistle/backend/internal/repository"
+	"final-whistle/backend/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -84,7 +87,15 @@ func main() {
 	log.Println("Server exited properly")
 }
 
-func setupRoutes(router *gin.Engine, db *db.Database) {
+func setupRoutes(router *gin.Engine, database *db.Database) {
+	matchRepository := repository.NewMatchRepository(database.DB)
+	teamRepository := repository.NewTeamRepository(database.DB)
+	playerRepository := repository.NewPlayerRepository(database.DB)
+
+	matchHandler := handler.NewMatchHandler(service.NewMatchService(matchRepository))
+	teamHandler := handler.NewTeamHandler(service.NewTeamService(teamRepository, matchRepository))
+	playerHandler := handler.NewPlayerHandler(service.NewPlayerService(playerRepository))
+
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -93,28 +104,10 @@ func setupRoutes(router *gin.Engine, db *db.Database) {
 		})
 	})
 
-	// API route groups (to be extended by later specs)
-	// These groups are intentionally empty - handlers will be added by subsequent specs
-	api := router.Group("/api")
-	{
-		// Auth routes will be added by spec2
-		_ = api.Group("/auth")
-
-		// Match routes will be added by spec3
-		_ = api.Group("/matches")
-
-		// Check-in routes will be added by spec4
-		_ = api.Group("/checkins")
-
-		// Team routes will be added by spec3
-		_ = api.Group("/teams")
-
-		// Player routes will be added by spec3
-		_ = api.Group("/players")
-
-		// User routes will be added by spec5
-		_ = api.Group("/users")
-	}
+	router.GET("/matches", matchHandler.List)
+	router.GET("/matches/:id", matchHandler.Detail)
+	router.GET("/teams/:id", teamHandler.Detail)
+	router.GET("/players/:id", playerHandler.Detail)
 
 	// Root endpoint
 	router.GET("/", func(c *gin.Context) {
