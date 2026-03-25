@@ -65,6 +65,7 @@ export async function apiRequest<T = unknown>(
 
   const config: RequestInit = {
     ...options,
+    credentials: options.credentials ?? "include",
     headers,
   };
 
@@ -93,6 +94,19 @@ export const api = {
 
   delete: <T = unknown>(endpoint: string, options?: RequestInit) =>
     apiRequest<T>(endpoint, { ...options, method: "DELETE" }),
+};
+
+export type AuthUserResponse = {
+  user: {
+    id: number;
+    name: string;
+    avatarUrl?: string;
+  };
+};
+
+export type LoginRequest = {
+  email: string;
+  name: string;
 };
 
 type MatchListQuery = {
@@ -128,4 +142,13 @@ export const teamsApi = {
 export const playersApi = {
   detail: <T = unknown>(playerId: string | number, options?: RequestInit) =>
     api.get<T>(`/players/${playerId}`, options),
+};
+
+export const authApi = {
+  login: (body: LoginRequest, options?: RequestInit) =>
+    api.post<AuthUserResponse>("/auth/login", body, options),
+  logout: (options?: RequestInit) =>
+    api.post<{ ok: true }>("/auth/logout", undefined, options),
+  me: (options?: RequestInit) =>
+    api.get<AuthUserResponse>("/auth/me", options),
 };

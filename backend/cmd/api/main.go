@@ -51,7 +51,7 @@ func main() {
 	router.Use(middleware.CORS())
 
 	// Set up routes
-	setupRoutes(router, database)
+	setupRoutes(router, database, cfg.Server.Env)
 
 	// Create HTTP server
 	server := &http.Server{
@@ -87,11 +87,14 @@ func main() {
 	log.Println("Server exited properly")
 }
 
-func setupRoutes(router *gin.Engine, database *db.Database) {
+func setupRoutes(router *gin.Engine, database *db.Database, env string) {
+	authRepository := repository.NewAuthRepository(database.DB)
 	matchRepository := repository.NewMatchRepository(database.DB)
 	teamRepository := repository.NewTeamRepository(database.DB)
 	playerRepository := repository.NewPlayerRepository(database.DB)
 
+	authService := service.NewAuthService(authRepository, env == "development")
+	authHandler := handler.NewAuthHandler(authService, env)
 	matchHandler := handler.NewMatchHandler(service.NewMatchService(matchRepository))
 	teamHandler := handler.NewTeamHandler(service.NewTeamService(teamRepository, matchRepository))
 	playerHandler := handler.NewPlayerHandler(service.NewPlayerService(playerRepository))
@@ -103,6 +106,12 @@ func setupRoutes(router *gin.Engine, database *db.Database) {
 			"time":   time.Now().UTC(),
 		})
 	})
+
+	router.Use(middleware.ResolveCurrentUser(authService))
+
+	router.POST("/auth/login", authHandler.Login)
+	router.POST("/auth/logout", authHandler.Logout)
+	router.GET("/auth/me", authHandler.Me)
 
 	router.GET("/matches", matchHandler.List)
 	router.GET("/matches/:id", matchHandler.Detail)

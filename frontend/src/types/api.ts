@@ -35,6 +35,19 @@ export interface UserSummary {
   avatarUrl?: string;
 }
 
+export interface LoginRequest {
+  email: string;
+  name: string;
+}
+
+export interface AuthUserResponse {
+  user: UserSummary;
+}
+
+export interface LogoutResponse {
+  ok: true;
+}
+
 export interface TagSummary {
   id: number;
   name: string;

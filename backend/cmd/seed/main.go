@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"final-whistle/backend/internal/config"
@@ -9,6 +10,9 @@ import (
 )
 
 func main() {
+	scope := flag.String("scope", "base", "seed scope: base or all")
+	flag.Parse()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
@@ -19,13 +23,22 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	if err := seed.SeedBaseData(database.DB); err != nil {
-		log.Fatalf("Failed to seed database: %v", err)
+	switch *scope {
+	case "base":
+		if err := seed.SeedBaseData(database.DB); err != nil {
+			log.Fatalf("Failed to seed database: %v", err)
+		}
+	case "all":
+		if err := seed.SeedAll(database.DB); err != nil {
+			log.Fatalf("Failed to seed database: %v", err)
+		}
+	default:
+		log.Fatalf("Unknown seed scope: %s", *scope)
 	}
 
 	if err := seed.ValidateSeedData(database.DB); err != nil {
 		log.Fatalf("Seed validation failed: %v", err)
 	}
 
-	log.Println("Base seed completed successfully")
+	log.Printf("%s seed completed successfully", *scope)
 }
