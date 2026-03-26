@@ -233,21 +233,6 @@ func TestCheckInServiceCreateRejectsInvalidPayloadCases(t *testing.T) {
 			}(),
 		},
 		{
-			name: "too many player ratings",
-			req: func() dto.UpsertCheckInRequestDTO {
-				req := validCheckInRequest()
-				req.PlayerRatings = []dto.PlayerRatingInputDTO{
-					{PlayerID: 101, Rating: 7},
-					{PlayerID: 102, Rating: 8},
-					{PlayerID: 103, Rating: 9},
-					{PlayerID: 104, Rating: 6},
-					{PlayerID: 105, Rating: 8},
-					{PlayerID: 106, Rating: 7},
-				}
-				return req
-			}(),
-		},
-		{
 			name: "invalid tags",
 			req: func() dto.UpsertCheckInRequestDTO {
 				req := validCheckInRequest()
@@ -284,6 +269,28 @@ func TestCheckInServiceCreateRejectsInvalidPayloadCases(t *testing.T) {
 			_, err := svc.CreateCheckIn(1, 10, tc.req)
 			assertValidationError(t, err)
 		})
+	}
+}
+
+func TestCheckInServiceAllowsMoreThanFiveRosterPlayers(t *testing.T) {
+	repo := newFakeCheckInRepository()
+	svc := NewCheckInService(repo)
+	req := validCheckInRequest()
+	req.PlayerRatings = []dto.PlayerRatingInputDTO{
+		{PlayerID: 101, Rating: 7},
+		{PlayerID: 102, Rating: 8},
+		{PlayerID: 103, Rating: 9},
+		{PlayerID: 104, Rating: 6},
+		{PlayerID: 105, Rating: 8},
+		{PlayerID: 106, Rating: 7},
+	}
+
+	result, err := svc.CreateCheckIn(1, 10, req)
+	if err != nil {
+		t.Fatalf("expected create to allow full roster rating, got %v", err)
+	}
+	if len(result.PlayerRatings) != 6 {
+		t.Fatalf("expected six player ratings, got %#v", result.PlayerRatings)
 	}
 }
 

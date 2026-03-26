@@ -75,6 +75,8 @@ type MatchDetailDTO struct {
 	AwayScore     *int                          `json:"awayScore,omitempty"`
 	Venue         *string                       `json:"venue,omitempty"`
 	Aggregates    MatchAggregateSummaryDTO      `json:"aggregates"`
+	AvailableTags []TagDTO                      `json:"availableTags"`
+	MatchPlayers  []PlayerSummaryDTO            `json:"matchPlayers"`
 	PlayerRatings []MatchPlayerRatingSummaryDTO `json:"playerRatings"`
 	RecentReviews []MatchRecentReviewDTO        `json:"recentReviews"`
 }

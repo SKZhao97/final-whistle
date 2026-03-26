@@ -13,9 +13,8 @@ import (
 )
 
 const (
-	maxPlayerRatingsPerCheckIn = 5
-	maxShortReviewLength       = 280
-	maxPlayerNoteLength        = 80
+	maxShortReviewLength = 280
+	maxPlayerNoteLength  = 80
 )
 
 var (
@@ -210,10 +209,6 @@ func (s *checkInService) validateUpsertPayload(matchID uint, req dto.UpsertCheck
 	if req.ShortReview != nil && len(*req.ShortReview) > maxShortReviewLength {
 		return &CheckInValidationError{Message: "shortReview must be 280 characters or fewer"}
 	}
-	if len(req.PlayerRatings) > maxPlayerRatingsPerCheckIn {
-		return &CheckInValidationError{Message: fmt.Sprintf("playerRatings cannot exceed %d items", maxPlayerRatingsPerCheckIn)}
-	}
-
 	playerIDs := make([]uint, 0, len(req.PlayerRatings))
 	seenPlayers := make(map[uint]struct{}, len(req.PlayerRatings))
 	for _, item := range req.PlayerRatings {

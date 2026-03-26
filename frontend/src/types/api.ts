@@ -119,8 +119,51 @@ export interface MatchDetail {
   awayScore?: number;
   venue?: string;
   aggregates: MatchAggregateSummary;
+  availableTags: TagSummary[];
+  matchPlayers: PlayerSummary[];
   playerRatings: MatchPlayerRatingSummary[];
   recentReviews: MatchRecentReview[];
+}
+
+export interface CheckInPlayerRating {
+  id: number;
+  player: PlayerSummary;
+  rating: number;
+  note?: string;
+}
+
+export interface CheckInDetail {
+  id: number;
+  matchId: number;
+  watchedType: "FULL" | "PARTIAL" | "HIGHLIGHTS";
+  supporterSide: "HOME" | "AWAY" | "NEUTRAL";
+  matchRating: number;
+  homeTeamRating: number;
+  awayTeamRating: number;
+  shortReview?: string;
+  watchedAt: string;
+  tags: TagSummary[];
+  playerRatings: CheckInPlayerRating[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CheckInPlayerRatingInput {
+  playerId: number;
+  rating: number;
+  note?: string;
+}
+
+export interface UpsertCheckInRequest {
+  watchedType: "FULL" | "PARTIAL" | "HIGHLIGHTS";
+  supporterSide: "HOME" | "AWAY" | "NEUTRAL";
+  matchRating: number;
+  homeTeamRating: number;
+  awayTeamRating: number;
+  shortReview?: string;
+  watchedAt: string;
+  tags: number[];
+  playerRatings: CheckInPlayerRatingInput[];
 }
 
 export interface TeamRatingSummary {

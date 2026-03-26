@@ -79,9 +79,44 @@ func (s *matchService) GetMatchDetail(id uint) (*dto.MatchDetailDTO, error) {
 	if err != nil {
 		return nil, err
 	}
+	rosterPlayers, err := s.repo.GetMatchRoster(id)
+	if err != nil {
+		return nil, err
+	}
+	availableTags, err := s.repo.ListActiveTags()
+	if err != nil {
+		return nil, err
+	}
 	reviews, err := s.repo.GetRecentReviews(id, 10)
 	if err != nil {
 		return nil, err
+	}
+
+	tagItems := make([]dto.TagDTO, 0, len(availableTags))
+	for _, tag := range availableTags {
+		tagItems = append(tagItems, dto.TagDTO{
+			ID:   tag.ID,
+			Name: tag.Name,
+			Slug: tag.Slug,
+		})
+	}
+
+	rosterItems := make([]dto.PlayerSummaryDTO, 0, len(rosterPlayers))
+	for _, item := range rosterPlayers {
+		rosterItems = append(rosterItems, dto.PlayerSummaryDTO{
+			ID:        item.PlayerID,
+			Name:      item.PlayerName,
+			Slug:      item.PlayerSlug,
+			Position:  item.Position,
+			AvatarURL: item.AvatarURL,
+			Team: dto.TeamSummaryDTO{
+				ID:        item.TeamID,
+				Name:      item.TeamName,
+				ShortName: item.TeamShortName,
+				Slug:      item.TeamSlug,
+				LogoURL:   item.TeamLogoURL,
+			},
+		})
 	}
 
 	playerItems := make([]dto.MatchPlayerRatingSummaryDTO, 0, len(playerRatings))
@@ -139,6 +174,8 @@ func (s *matchService) GetMatchDetail(id uint) (*dto.MatchDetailDTO, error) {
 		AwayScore:     match.AwayScore,
 		Venue:         match.Venue,
 		Aggregates:    toAggregateDTO(aggregates[id]),
+		AvailableTags: tagItems,
+		MatchPlayers:  rosterItems,
 		PlayerRatings: playerItems,
 		RecentReviews: reviewItems,
 	}, nil

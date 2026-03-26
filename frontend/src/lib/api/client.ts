@@ -109,6 +109,66 @@ export type LoginRequest = {
   name: string;
 };
 
+export type MatchRosterPlayer = {
+  id: number;
+  name: string;
+  slug: string;
+  position?: string;
+  avatarUrl?: string;
+  team: {
+    id: number;
+    name: string;
+    shortName?: string;
+    slug: string;
+    logoUrl?: string;
+  };
+};
+
+export type CheckInPlayerRating = {
+  id: number;
+  player: MatchRosterPlayer;
+  rating: number;
+  note?: string;
+};
+
+export type CheckInDetailResponse = {
+  id: number;
+  matchId: number;
+  watchedType: "FULL" | "PARTIAL" | "HIGHLIGHTS";
+  supporterSide: "HOME" | "AWAY" | "NEUTRAL";
+  matchRating: number;
+  homeTeamRating: number;
+  awayTeamRating: number;
+  shortReview?: string;
+  watchedAt: string;
+  tags: Array<{ id: number; name: string; slug: string }>;
+  playerRatings: CheckInPlayerRating[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MatchTagOption = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
+export type UpsertCheckInRequest = {
+  watchedType: "FULL" | "PARTIAL" | "HIGHLIGHTS";
+  supporterSide: "HOME" | "AWAY" | "NEUTRAL";
+  matchRating: number;
+  homeTeamRating: number;
+  awayTeamRating: number;
+  shortReview?: string;
+  watchedAt: string;
+  tags: number[];
+  playerRatings: Array<{
+    playerId: number;
+    rating: number;
+    note?: string;
+  }>;
+};
+
 type MatchListQuery = {
   competition?: string;
   season?: string;
@@ -132,6 +192,12 @@ export const matchesApi = {
     api.get<T>(withQuery("/matches", query), options),
   detail: <T = unknown>(matchId: string | number, options?: RequestInit) =>
     api.get<T>(`/matches/${matchId}`, options),
+  myCheckIn: (matchId: string | number, options?: RequestInit) =>
+    api.get<CheckInDetailResponse | null>(`/matches/${matchId}/my-checkin`, options),
+  createCheckIn: (matchId: string | number, body: UpsertCheckInRequest, options?: RequestInit) =>
+    api.post<CheckInDetailResponse>(`/matches/${matchId}/checkin`, body, options),
+  updateCheckIn: (matchId: string | number, body: UpsertCheckInRequest, options?: RequestInit) =>
+    api.put<CheckInDetailResponse>(`/matches/${matchId}/checkin`, body, options),
 };
 
 export const teamsApi = {

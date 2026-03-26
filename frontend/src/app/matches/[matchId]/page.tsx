@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import MatchCheckInPanel from "@/components/checkin/MatchCheckInPanel";
 import { ApiError, matchesApi } from "@/lib/api/client";
 import type { MatchDetail } from "@/types/api";
 
@@ -48,6 +49,8 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
+        <MatchCheckInPanel match={match} />
+
         <section className="rounded-xl border p-5">
           <h2 className="text-lg font-semibold">Community Snapshot</h2>
           <dl className="mt-4 space-y-2 text-sm text-neutral-700">

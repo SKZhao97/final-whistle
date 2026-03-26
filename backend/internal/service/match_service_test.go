@@ -18,6 +18,10 @@ type fakeMatchRepository struct {
 	aggregatesErr    error
 	matchDetail      *model.Match
 	matchDetailErr   error
+	activeTags       []model.Tag
+	activeTagsErr    error
+	matchRoster      []repository.MatchRosterPlayerRecord
+	matchRosterErr   error
 	playerRatings    []repository.MatchPlayerRatingRecord
 	playerRatingsErr error
 	reviews          []repository.MatchRecentReviewRecord
@@ -34,6 +38,14 @@ func (f *fakeMatchRepository) GetMatchAggregates(matchIDs []uint) (map[uint]repo
 
 func (f *fakeMatchRepository) FindMatchByID(id uint) (*model.Match, error) {
 	return f.matchDetail, f.matchDetailErr
+}
+
+func (f *fakeMatchRepository) ListActiveTags() ([]model.Tag, error) {
+	return f.activeTags, f.activeTagsErr
+}
+
+func (f *fakeMatchRepository) GetMatchRoster(matchID uint) ([]repository.MatchRosterPlayerRecord, error) {
+	return f.matchRoster, f.matchRosterErr
 }
 
 func (f *fakeMatchRepository) GetPlayerRatingSummary(matchID uint, limit int) ([]repository.MatchPlayerRatingRecord, error) {
@@ -81,6 +93,19 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 	svc := NewMatchService(&fakeMatchRepository{
 		matchDetail: match,
 		aggregates:  map[uint]repository.MatchAggregateRecord{1: {MatchID: 1, CheckInCount: 0}},
+		activeTags: []model.Tag{
+			{ID: 1, Name: "热血", Slug: "hot-blooded"},
+		},
+		matchRoster: []repository.MatchRosterPlayerRecord{
+			{
+				PlayerID:   7,
+				PlayerName: "Bukayo Saka",
+				PlayerSlug: "bukayo-saka",
+				TeamID:     1,
+				TeamName:   "Home",
+				TeamSlug:   "home",
+			},
+		},
 	})
 
 	result, err := svc.GetMatchDetail(1)
@@ -89,5 +114,11 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 	}
 	if result.ID != 1 || result.Aggregates.CheckInCount != 0 {
 		t.Fatalf("unexpected result: %#v", result)
+	}
+	if len(result.MatchPlayers) != 1 || result.MatchPlayers[0].ID != 7 {
+		t.Fatalf("expected match roster in detail response, got %#v", result.MatchPlayers)
+	}
+	if len(result.AvailableTags) != 1 || result.AvailableTags[0].ID != 1 {
+		t.Fatalf("expected available tags in detail response, got %#v", result.AvailableTags)
 	}
 }

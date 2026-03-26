@@ -37,6 +37,19 @@ type MatchPlayerRatingRecord struct {
 	RatingCount   int64
 }
 
+type MatchRosterPlayerRecord struct {
+	PlayerID      uint
+	PlayerName    string
+	PlayerSlug    string
+	Position      *string
+	AvatarURL     *string
+	TeamID        uint
+	TeamName      string
+	TeamShortName *string
+	TeamSlug      string
+	TeamLogoURL   *string
+}
+
 type MatchRecentReviewRecord struct {
 	CheckInID     uint
 	UserID        uint
@@ -52,6 +65,8 @@ type MatchRepository interface {
 	ListMatches(params MatchListParams) ([]model.Match, int64, error)
 	GetMatchAggregates(matchIDs []uint) (map[uint]MatchAggregateRecord, error)
 	FindMatchByID(id uint) (*model.Match, error)
+	ListActiveTags() ([]model.Tag, error)
+	GetMatchRoster(matchID uint) ([]MatchRosterPlayerRecord, error)
 	GetPlayerRatingSummary(matchID uint, limit int) ([]MatchPlayerRatingRecord, error)
 	GetRecentReviews(matchID uint, limit int) ([]MatchRecentReviewRecord, error)
 }
@@ -130,6 +145,40 @@ func (r *GormMatchRepository) FindMatchByID(id uint) (*model.Match, error) {
 		return nil, err
 	}
 	return &match, nil
+}
+
+func (r *GormMatchRepository) ListActiveTags() ([]model.Tag, error) {
+	var tags []model.Tag
+	if err := r.DB.
+		Where("is_active = ?", true).
+		Order("sort_order ASC, id ASC").
+		Find(&tags).Error; err != nil {
+		return nil, err
+	}
+	return tags, nil
+}
+
+func (r *GormMatchRepository) GetMatchRoster(matchID uint) ([]MatchRosterPlayerRecord, error) {
+	var rows []MatchRosterPlayerRecord
+	err := r.DB.
+		Table("match_players AS mp").
+		Select(`p.id AS player_id,
+			p.name AS player_name,
+			p.slug AS player_slug,
+			p.position,
+			p.avatar_url,
+			t.id AS team_id,
+			t.name AS team_name,
+			t.short_name AS team_short_name,
+			t.slug AS team_slug,
+			t.logo_url AS team_logo_url`).
+		Joins("JOIN players p ON p.id = mp.player_id").
+		Joins("JOIN teams t ON t.id = mp.team_id").
+		Where("mp.match_id = ?", matchID).
+		Group("p.id, t.id").
+		Order("t.name ASC, p.name ASC").
+		Scan(&rows).Error
+	return rows, err
 }
 
 func (r *GormMatchRepository) GetPlayerRatingSummary(matchID uint, limit int) ([]MatchPlayerRatingRecord, error) {
