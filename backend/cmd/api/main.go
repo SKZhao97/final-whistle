@@ -89,12 +89,14 @@ func main() {
 
 func setupRoutes(router *gin.Engine, database *db.Database, env string) {
 	authRepository := repository.NewAuthRepository(database.DB)
+	checkInRepository := repository.NewCheckInRepository(database.DB)
 	matchRepository := repository.NewMatchRepository(database.DB)
 	teamRepository := repository.NewTeamRepository(database.DB)
 	playerRepository := repository.NewPlayerRepository(database.DB)
 
 	authService := service.NewAuthService(authRepository, env == "development")
 	authHandler := handler.NewAuthHandler(authService, env)
+	checkInHandler := handler.NewCheckInHandler(service.NewCheckInService(checkInRepository))
 	matchHandler := handler.NewMatchHandler(service.NewMatchService(matchRepository))
 	teamHandler := handler.NewTeamHandler(service.NewTeamService(teamRepository, matchRepository))
 	playerHandler := handler.NewPlayerHandler(service.NewPlayerService(playerRepository))
@@ -117,6 +119,12 @@ func setupRoutes(router *gin.Engine, database *db.Database, env string) {
 	router.GET("/matches/:id", matchHandler.Detail)
 	router.GET("/teams/:id", teamHandler.Detail)
 	router.GET("/players/:id", playerHandler.Detail)
+
+	protected := router.Group("")
+	protected.Use(middleware.RequireAuth())
+	protected.GET("/matches/:id/my-checkin", checkInHandler.GetMyCheckIn)
+	protected.POST("/matches/:id/checkin", checkInHandler.Create)
+	protected.PUT("/matches/:id/checkin", checkInHandler.Update)
 
 	// Root endpoint
 	router.GET("/", func(c *gin.Context) {
