@@ -24,10 +24,10 @@ final-whistle/
 
 ```bash
 # Create a PostgreSQL database
-createdb final_whistle_dev
+createdb final_whistle
 
 # Or using psql
-psql -c "CREATE DATABASE final_whistle_dev;"
+psql -c "CREATE DATABASE final_whistle;"
 ```
 
 ### 2. Backend Setup
@@ -39,15 +39,18 @@ cd backend
 go mod download
 
 # Set environment variables
-export DATABASE_URL="postgres://localhost:5432/final_whistle_dev?sslmode=disable"
+export DATABASE_URL="postgres://localhost:5432/final_whistle?sslmode=disable"
 export PORT=8080
 export ENV=development
 
-# Apply SQL migrations using your preferred PostgreSQL workflow
-# (migration entrypoint is not part of spec1)
+# Apply SQL migrations
+go run ./cmd/migrate/main.go
+
+# Seed development data
+go run ./cmd/seed/main.go -scope=all
 
 # Start the server
-go run cmd/api/main.go
+go run ./cmd/api/main.go
 ```
 
 ### 3. Frontend Setup
@@ -72,7 +75,7 @@ The application will be available at:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection URL | `postgres://localhost:5432/final_whistle_dev?sslmode=disable` |
+| `DATABASE_URL` | PostgreSQL connection URL | `postgres://postgres:postgres@localhost:5432/final_whistle?sslmode=disable` |
 | `PORT` | Server port | `8080` |
 | `ENV` | Environment (`development`, `production`) | `development` |
 | `LOG_LEVEL` | Log level (`debug`, `info`, `warn`, `error`) | `info` |
@@ -89,9 +92,7 @@ The database includes seed data for development:
 
 ```bash
 cd backend
-
-# Seed helpers currently exist as library code under backend/seed/
-# (CLI entrypoint is not part of spec1)
+go run ./cmd/seed/main.go -scope=all
 ```
 
 Seed data includes:
@@ -116,9 +117,10 @@ The backend follows a layered architecture:
 
 The frontend uses:
 
-- **Next.js** with App Router
+- **Next.js 16** with App Router
+- **React 19**
 - **TypeScript** with strict type checking
-- **Tailwind CSS** for styling
+- **Tailwind CSS 4** for styling
 - Shared app shell and type-safe API client foundation
 
 ## API Endpoints
@@ -127,10 +129,19 @@ The frontend uses:
 
 - `GET /health` - Health check
 - `GET /` - API info
+- `GET /matches` - Public match list
+- `GET /matches/:id` - Public match detail
+- `GET /teams/:id` - Public team detail
+- `GET /players/:id` - Public player detail
 
 ### Protected Endpoints (require authentication)
 
-*Will be implemented in subsequent specs*
+- `POST /auth/login`
+- `POST /auth/logout`
+- `GET /auth/me`
+- `GET /matches/:id/my-checkin`
+- `POST /matches/:id/checkin`
+- `PUT /matches/:id/checkin`
 
 ## Database Schema
 

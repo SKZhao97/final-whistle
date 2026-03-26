@@ -17,18 +17,6 @@ export default function Header() {
             >
               Matches
             </Link>
-            <Link
-              href="/teams"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              Teams
-            </Link>
-            <Link
-              href="/players"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              Players
-            </Link>
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">

@@ -1,8 +1,6 @@
 export default function Navigation() {
   const navItems = [
     { href: '/matches', label: 'Matches' },
-    { href: '/teams', label: 'Teams' },
-    { href: '/players', label: 'Players' },
     { href: '/me', label: 'My Profile' },
   ];
 
