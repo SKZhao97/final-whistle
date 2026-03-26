@@ -148,6 +148,40 @@ export interface CheckInDetail {
   updatedAt: string;
 }
 
+export interface UserProfileSummary {
+  user: UserSummary;
+  checkInCount: number;
+  avgMatchRating?: number;
+  favoriteTeamId?: number;
+  favoriteTeam?: TeamSummary;
+  mostUsedTagId?: number;
+  mostUsedTag?: TagSummary;
+  recentCheckInCount: number;
+}
+
+export interface UserCheckInHistoryItem {
+  id: number;
+  matchId: number;
+  watchedType: "FULL" | "PARTIAL" | "HIGHLIGHTS";
+  supporterSide: "HOME" | "AWAY" | "NEUTRAL";
+  matchRating: number;
+  homeTeamRating: number;
+  awayTeamRating: number;
+  shortReview?: string;
+  watchedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  tags: TagSummary[];
+  match: MatchListItem;
+}
+
+export interface UserCheckInHistoryResponse {
+  items: UserCheckInHistoryItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
 export interface CheckInPlayerRatingInput {
   playerId: number;
   rating: number;

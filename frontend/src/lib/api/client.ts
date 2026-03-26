@@ -1,3 +1,5 @@
+import type { UserCheckInHistoryResponse, UserProfileSummary } from "@/types/api";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export type ApiResponse<T = unknown> = {
@@ -217,4 +219,13 @@ export const authApi = {
     api.post<{ ok: true }>("/auth/logout", undefined, options),
   me: (options?: RequestInit) =>
     api.get<AuthUserResponse>("/auth/me", options),
+};
+
+export const usersApi = {
+  profile: (options?: RequestInit) =>
+    api.get<UserProfileSummary>("/me/profile", options),
+  checkins: (
+    query?: { page?: number; pageSize?: number },
+    options?: RequestInit,
+  ) => api.get<UserCheckInHistoryResponse>(withQuery("/me/checkins", query), options),
 };

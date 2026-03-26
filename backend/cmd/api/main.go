@@ -93,6 +93,7 @@ func setupRoutes(router *gin.Engine, database *db.Database, env string) {
 	matchRepository := repository.NewMatchRepository(database.DB)
 	teamRepository := repository.NewTeamRepository(database.DB)
 	playerRepository := repository.NewPlayerRepository(database.DB)
+	userRepository := repository.NewUserRepository(database.DB)
 
 	authService := service.NewAuthService(authRepository, env == "development")
 	authHandler := handler.NewAuthHandler(authService, env)
@@ -100,6 +101,7 @@ func setupRoutes(router *gin.Engine, database *db.Database, env string) {
 	matchHandler := handler.NewMatchHandler(service.NewMatchService(matchRepository))
 	teamHandler := handler.NewTeamHandler(service.NewTeamService(teamRepository, matchRepository))
 	playerHandler := handler.NewPlayerHandler(service.NewPlayerService(playerRepository))
+	userHandler := handler.NewUserHandler(service.NewUserService(userRepository))
 
 	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
@@ -122,6 +124,8 @@ func setupRoutes(router *gin.Engine, database *db.Database, env string) {
 
 	protected := router.Group("")
 	protected.Use(middleware.RequireAuth())
+	protected.GET("/me/profile", userHandler.GetProfile)
+	protected.GET("/me/checkins", userHandler.GetCheckInHistory)
 	protected.GET("/matches/:id/my-checkin", checkInHandler.GetMyCheckIn)
 	protected.POST("/matches/:id/checkin", checkInHandler.Create)
 	protected.PUT("/matches/:id/checkin", checkInHandler.Update)
