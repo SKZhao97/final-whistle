@@ -7,6 +7,9 @@ export default function MatchDetailError() {
       <p className="mt-2 text-sm text-neutral-600">
         The public match detail page is temporarily unavailable.
       </p>
+      <p className="mt-2 text-sm text-neutral-600">
+        If the frontend was updated recently, restart the backend and reload this page.
+      </p>
     </div>
   );
 }

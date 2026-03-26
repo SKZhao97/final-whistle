@@ -23,63 +23,70 @@ async function getMatchDetail(matchId: string) {
 export default async function MatchDetailPage({ params }: MatchDetailPageProps) {
   const { matchId } = await params;
   const match = await getMatchDetail(matchId);
+  const normalizedMatch: MatchDetail = {
+    ...match,
+    availableTags: match.availableTags ?? [],
+    matchPlayers: match.matchPlayers ?? [],
+    playerRatings: match.playerRatings ?? [],
+    recentReviews: match.recentReviews ?? [],
+  };
 
   return (
     <div className="py-8">
       <div className="mb-8">
         <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-          {match.competition} · {match.season}
+          {normalizedMatch.competition} · {normalizedMatch.season}
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">
-          {match.homeTeam.name} {typeof match.homeScore === "number" ? match.homeScore : "-"}:
-          {typeof match.awayScore === "number" ? match.awayScore : "-"} {match.awayTeam.name}
+          {normalizedMatch.homeTeam.name} {typeof normalizedMatch.homeScore === "number" ? normalizedMatch.homeScore : "-"}:
+          {typeof normalizedMatch.awayScore === "number" ? normalizedMatch.awayScore : "-"} {normalizedMatch.awayTeam.name}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
-          {match.round ?? "Round TBD"} · {new Date(match.kickoffAt).toLocaleString()}
-          {match.venue ? ` · ${match.venue}` : ""}
+          {normalizedMatch.round ?? "Round TBD"} · {new Date(normalizedMatch.kickoffAt).toLocaleString()}
+          {normalizedMatch.venue ? ` · ${normalizedMatch.venue}` : ""}
         </p>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          <Link href={`/teams/${match.homeTeam.id}`} className="underline">
-            {match.homeTeam.name}
+          <Link href={`/teams/${normalizedMatch.homeTeam.id}`} className="underline">
+            {normalizedMatch.homeTeam.name}
           </Link>
-          <Link href={`/teams/${match.awayTeam.id}`} className="underline">
-            {match.awayTeam.name}
+          <Link href={`/teams/${normalizedMatch.awayTeam.id}`} className="underline">
+            {normalizedMatch.awayTeam.name}
           </Link>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <MatchCheckInPanel match={match} />
+        <MatchCheckInPanel match={normalizedMatch} />
 
         <section className="rounded-xl border p-5">
           <h2 className="text-lg font-semibold">Community Snapshot</h2>
           <dl className="mt-4 space-y-2 text-sm text-neutral-700">
             <div className="flex justify-between gap-4">
               <dt>Check-ins</dt>
-              <dd>{match.aggregates.checkInCount}</dd>
+                  <dd>{normalizedMatch.aggregates.checkInCount}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt>Match avg</dt>
-              <dd>{match.aggregates.matchRatingAvg ?? "No samples"}</dd>
+                  <dd>{normalizedMatch.aggregates.matchRatingAvg ?? "No samples"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt>{match.homeTeam.name}</dt>
-              <dd>{match.aggregates.homeTeamRatingAvg ?? "No samples"}</dd>
+                  <dt>{normalizedMatch.homeTeam.name}</dt>
+                  <dd>{normalizedMatch.aggregates.homeTeamRatingAvg ?? "No samples"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt>{match.awayTeam.name}</dt>
-              <dd>{match.aggregates.awayTeamRatingAvg ?? "No samples"}</dd>
+                  <dt>{normalizedMatch.awayTeam.name}</dt>
+                  <dd>{normalizedMatch.aggregates.awayTeamRatingAvg ?? "No samples"}</dd>
             </div>
           </dl>
         </section>
 
         <section className="rounded-xl border p-5 lg:col-span-2">
           <h2 className="text-lg font-semibold">Player Ratings</h2>
-          {match.playerRatings.length === 0 ? (
+          {normalizedMatch.playerRatings.length === 0 ? (
             <p className="mt-4 text-sm text-neutral-600">No player ratings yet.</p>
           ) : (
             <div className="mt-4 space-y-3">
-              {match.playerRatings.map((rating) => (
+              {normalizedMatch.playerRatings.map((rating) => (
                 <div key={rating.player.id} className="flex items-center justify-between gap-4">
                   <div>
                     <Link href={`/players/${rating.player.id}`} className="font-medium underline">
@@ -99,11 +106,11 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
 
         <section className="rounded-xl border p-5 lg:col-span-3">
           <h2 className="text-lg font-semibold">Recent Reviews</h2>
-          {match.recentReviews.length === 0 ? (
+          {normalizedMatch.recentReviews.length === 0 ? (
             <p className="mt-4 text-sm text-neutral-600">No reviews yet.</p>
           ) : (
             <div className="mt-4 grid gap-4">
-              {match.recentReviews.map((review) => (
+              {normalizedMatch.recentReviews.map((review) => (
                 <article key={review.id} className="rounded-lg border p-4">
                   <div className="flex items-center justify-between gap-4">
                     <p className="font-medium">{review.user.name}</p>

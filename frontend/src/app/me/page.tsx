@@ -13,57 +13,106 @@ import {
 import type { UserCheckInHistoryResponse, UserProfileSummary } from "@/types/api";
 
 export default function MePage() {
-  const { status, user } = useAuth();
+  const { status, user, refresh } = useAuth();
   const [profile, setProfile] = useState<UserProfileSummary | null>(null);
   const [history, setHistory] = useState<UserCheckInHistoryResponse | null>(null);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status !== "authenticated" || !user) {
       setProfile(null);
-      setHistory(null);
-      setError(null);
+      setProfileError(null);
       return;
     }
 
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
-      setError(null);
+    async function loadProfile() {
+      setProfileLoading(true);
+      setProfileError(null);
       try {
-        const [profileResult, historyResult] = await Promise.all([
-          usersApi.profile(),
-          usersApi.checkins({ page, pageSize: 10 }),
-        ]);
+        const profileResult = await usersApi.profile();
         if (cancelled) {
           return;
         }
         setProfile(profileResult);
+      } catch (err) {
+        if (cancelled) {
+          return;
+        }
+        if (err instanceof ApiError) {
+          if (err.code === "UNAUTHORIZED") {
+            await refresh();
+            return;
+          }
+          if (err.code === "NOT_FOUND") {
+            setProfileError("Profile APIs are not available on the backend yet. Restart the backend with the latest code.");
+          } else {
+            setProfileError(err.message);
+          }
+        } else {
+          setProfileError("Failed to load your profile.");
+        }
+      } finally {
+        if (!cancelled) {
+          setProfileLoading(false);
+        }
+      }
+    }
+
+    void loadProfile();
+    return () => {
+      cancelled = true;
+    };
+  }, [refresh, status, user]);
+
+  useEffect(() => {
+    if (status !== "authenticated" || !user) {
+      setHistory(null);
+      setHistoryError(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadHistory() {
+      setHistoryLoading(true);
+      setHistoryError(null);
+      try {
+        const historyResult = await usersApi.checkins({ page, pageSize: 10 });
+        if (cancelled) {
+          return;
+        }
         setHistory(historyResult);
       } catch (err) {
         if (cancelled) {
           return;
         }
         if (err instanceof ApiError) {
-          setError(err.message);
+          if (err.code === "UNAUTHORIZED") {
+            await refresh();
+            return;
+          }
+          setHistoryError(err.message);
         } else {
-          setError("Failed to load your profile.");
+          setHistoryError("Failed to load your check-in history.");
         }
       } finally {
         if (!cancelled) {
-          setLoading(false);
+          setHistoryLoading(false);
         }
       }
     }
 
-    void load();
+    void loadHistory();
     return () => {
       cancelled = true;
     };
-  }, [page, status, user]);
+  }, [page, refresh, status, user]);
 
   if (status === "loading") {
     return (
@@ -91,7 +140,7 @@ export default function MePage() {
     );
   }
 
-  if (loading && !profile) {
+  if (profileLoading && !profile) {
     return (
       <div className="py-8">
         <h1 className="text-3xl font-bold">My Profile</h1>
@@ -100,11 +149,14 @@ export default function MePage() {
     );
   }
 
-  if (error && !profile) {
+  if (profileError && !profile) {
     return (
       <div className="py-8">
         <h1 className="text-3xl font-bold">My Profile</h1>
-        <p className="mt-4 text-sm text-red-600">{error}</p>
+        <p className="mt-4 text-sm text-red-600">{profileError}</p>
+        <p className="mt-2 text-sm text-neutral-600">
+          If you just pulled new code, make sure the backend has been restarted.
+        </p>
       </div>
     );
   }
@@ -151,7 +203,11 @@ export default function MePage() {
           <p className="text-sm text-neutral-500">Total: {history.total}</p>
         </div>
 
-        {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
+        {profileError ? <p className="mt-4 text-sm text-red-600">{profileError}</p> : null}
+        {historyError ? <p className="mt-2 text-sm text-red-600">{historyError}</p> : null}
+        {historyLoading && history ? (
+          <p className="mt-2 text-sm text-neutral-500">Refreshing history...</p>
+        ) : null}
 
         {history.items.length === 0 ? (
           <div className="mt-6 rounded-2xl border border-dashed p-6">

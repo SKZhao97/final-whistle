@@ -34,6 +34,8 @@ export type CheckInFormErrors = {
 };
 
 export const DEFAULT_PLAYER_RATING = { playerId: "", rating: "", note: "" };
+const MAX_SHORT_REVIEW_LENGTH = 280;
+const MAX_PLAYER_NOTE_LENGTH = 80;
 
 export function createDefaultFormState(): CheckInFormState {
   return {
@@ -85,7 +87,7 @@ export function validateFormState(
   validateRatingString(formState.homeTeamRating, "Home team rating", errors, "homeTeamRating");
   validateRatingString(formState.awayTeamRating, "Away team rating", errors, "awayTeamRating");
 
-  if (formState.shortReview.length > 280) {
+  if (formState.shortReview.length > MAX_SHORT_REVIEW_LENGTH) {
     errors.shortReview = "Short review must be 280 characters or fewer.";
   }
   if (!formState.watchedAt) {
@@ -96,29 +98,9 @@ export function validateFormState(
 
   const selectedPlayers = new Set<number>();
   for (const entry of formState.playerRatings) {
-    if (!entry.playerId) {
-      errors.playerRatings = "Each player rating needs a selected player.";
-      break;
-    }
-
-    const playerId = Number(entry.playerId);
-    if (!rosterIds.has(playerId)) {
-      errors.playerRatings = "Player ratings must use players from this match roster.";
-      break;
-    }
-    if (selectedPlayers.has(playerId)) {
-      errors.playerRatings = "A player can only be rated once per record.";
-      break;
-    }
-    selectedPlayers.add(playerId);
-
-    const rating = Number(entry.rating);
-    if (!entry.rating || Number.isNaN(rating) || rating < 1 || rating > 10) {
-      errors.playerRatings = "Each player rating must be between 1 and 10.";
-      break;
-    }
-    if (entry.note.length > 80) {
-      errors.playerRatings = "Each player note must be 80 characters or fewer.";
+    const playerRatingError = validatePlayerRatingEntry(entry, rosterIds, selectedPlayers);
+    if (playerRatingError) {
+      errors.playerRatings = playerRatingError;
       break;
     }
   }
@@ -169,16 +151,58 @@ function validateRatingString(
   errors: CheckInFormErrors,
   key: "matchRating" | "homeTeamRating" | "awayTeamRating",
 ) {
-  const numericValue = Number(value);
-  if (!value || Number.isNaN(numericValue) || numericValue < 1 || numericValue > 10) {
+  const numericValue = parseRequiredNumber(value);
+  if (numericValue === null || numericValue < 1 || numericValue > 10) {
     errors[key] = `${label} must be between 1 and 10.`;
   }
 }
 
 function parseNumericField(value: string, field: string) {
-  const parsed = Number(value);
-  if (!value || Number.isNaN(parsed)) {
+  const parsed = parseRequiredNumber(value);
+  if (parsed === null) {
     throw new Error(`Invalid ${field} value`);
   }
-  return parsed
+  return parsed;
+}
+
+function validatePlayerRatingEntry(
+  entry: CheckInFormState["playerRatings"][number],
+  rosterIds: Set<number>,
+  selectedPlayers: Set<number>,
+) {
+  const playerId = parseRequiredNumber(entry.playerId);
+  if (playerId === null) {
+    return "Each player rating needs a selected player.";
+  }
+  if (!rosterIds.has(playerId)) {
+    return "Player ratings must use players from this match roster.";
+  }
+  if (selectedPlayers.has(playerId)) {
+    return "A player can only be rated once per record.";
+  }
+  selectedPlayers.add(playerId);
+
+  const rating = parseRequiredNumber(entry.rating);
+  if (rating === null || rating < 1 || rating > 10) {
+    return "Each player rating must be between 1 and 10.";
+  }
+  if (entry.note.length > MAX_PLAYER_NOTE_LENGTH) {
+    return "Each player note must be 80 characters or fewer.";
+  }
+
+  return undefined;
+}
+
+function parseRequiredNumber(value: string) {
+  const trimmedValue = value.trim();
+  if (trimmedValue === "") {
+    return null;
+  }
+
+  const parsed = Number(trimmedValue);
+  if (Number.isNaN(parsed)) {
+    return null;
+  }
+
+  return parsed;
 }

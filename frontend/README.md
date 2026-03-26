@@ -27,7 +27,7 @@ npm run build
 - Public match, team, and player browsing
 - Dev login with session cookie auth
 - Match check-in create and edit flow
-- Profile page placeholder pending the final profile spec
+- Profile summary and check-in history
 
 ## Stack
 

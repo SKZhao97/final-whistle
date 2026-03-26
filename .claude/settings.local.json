@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(openspec status:*)"
+      "Bash(openspec status:*)",
+      "Bash(go test:*)"
     ]
   }
 }

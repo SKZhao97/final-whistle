@@ -75,6 +75,63 @@ func SeedPlayers(db *gorm.DB) error {
 			Slug:     "william-saliba",
 			Position: stringPtr("Defender"),
 		},
+		// Chelsea players
+		{
+			TeamID:   teams["chelsea"],
+			Name:     "Cole Palmer",
+			Slug:     "cole-palmer",
+			Position: stringPtr("Forward"),
+		},
+		{
+			TeamID:   teams["chelsea"],
+			Name:     "Enzo Fernandez",
+			Slug:     "enzo-fernandez",
+			Position: stringPtr("Midfielder"),
+		},
+		{
+			TeamID:   teams["chelsea"],
+			Name:     "Reece James",
+			Slug:     "reece-james",
+			Position: stringPtr("Defender"),
+		},
+		// Manchester United players
+		{
+			TeamID:   teams["manchester-united"],
+			Name:     "Bruno Fernandes",
+			Slug:     "bruno-fernandes",
+			Position: stringPtr("Midfielder"),
+		},
+		{
+			TeamID:   teams["manchester-united"],
+			Name:     "Marcus Rashford",
+			Slug:     "marcus-rashford",
+			Position: stringPtr("Forward"),
+		},
+		{
+			TeamID:   teams["manchester-united"],
+			Name:     "Lisandro Martinez",
+			Slug:     "lisandro-martinez",
+			Position: stringPtr("Defender"),
+		},
+		// Tottenham players
+		{
+			TeamID:   teams["tottenham-hotspur"],
+			Name:     "Son Heung-min",
+			Slug:     "son-heung-min",
+			Position: stringPtr("Forward"),
+		},
+		{
+			TeamID:   teams["tottenham-hotspur"],
+			Name:     "James Maddison",
+			Slug:     "james-maddison",
+			Position: stringPtr("Midfielder"),
+		},
+		{
+			TeamID:   teams["tottenham-hotspur"],
+			Name:     "Cristian Romero",
+			Slug:     "cristian-romero",
+			Position: stringPtr("Defender"),
+		},
 	}
 
 	for _, player := range players {

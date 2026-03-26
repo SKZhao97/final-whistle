@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"log"
 	"strings"
 	"time"
 
@@ -113,7 +114,9 @@ func (s *authService) GetCurrentUser(token string) (*model.User, error) {
 	}
 
 	if session.ExpiredAt.Before(s.now()) {
-		_ = s.repo.DeleteSessionByID(session.ID)
+		if err := s.repo.DeleteSessionByID(session.ID); err != nil {
+			log.Printf("failed to delete expired session %d: %v", session.ID, err)
+		}
 		return nil, ErrUnauthorized
 	}
 

@@ -61,7 +61,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
-	token, _ := c.Cookie(service.SessionCookieName)
+	token, err := c.Cookie(service.SessionCookieName)
+	if err != nil {
+		h.clearSessionCookie(c)
+		utils.OKResponse(c, dto.LogoutResponseDTO{OK: true})
+		return
+	}
 	if err := h.service.Logout(token); err != nil {
 		utils.InternalErrorResponse(c, "Failed to logout", nil)
 		return

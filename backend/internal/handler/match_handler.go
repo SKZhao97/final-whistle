@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"strconv"
-
 	"final-whistle/backend/internal/repository"
 	"final-whistle/backend/internal/service"
 	"final-whistle/backend/internal/utils"
@@ -59,15 +57,4 @@ func (h *MatchHandler) Detail(c *gin.Context) {
 		return
 	}
 	utils.OKResponse(c, result)
-}
-
-func parseInt(value string, defaultValue int) int {
-	if value == "" {
-		return defaultValue
-	}
-	parsed, err := strconv.Atoi(value)
-	if err != nil {
-		return defaultValue
-	}
-	return parsed
 }

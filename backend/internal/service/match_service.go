@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"final-whistle/backend/internal/dto"
-	"final-whistle/backend/internal/model"
 	"final-whistle/backend/internal/repository"
 	"gorm.io/gorm"
 )
@@ -179,16 +178,6 @@ func (s *matchService) GetMatchDetail(id uint) (*dto.MatchDetailDTO, error) {
 		PlayerRatings: playerItems,
 		RecentReviews: reviewItems,
 	}, nil
-}
-
-func toTeamSummaryDTO(team model.Team) dto.TeamSummaryDTO {
-	return dto.TeamSummaryDTO{
-		ID:        team.ID,
-		Name:      team.Name,
-		ShortName: team.ShortName,
-		Slug:      team.Slug,
-		LogoURL:   team.LogoURL,
-	}
 }
 
 func toAggregateDTO(record repository.MatchAggregateRecord) dto.MatchAggregateSummaryDTO {

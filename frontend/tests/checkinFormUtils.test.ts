@@ -47,6 +47,25 @@ test("validateFormState rejects duplicate players", () => {
   assert.equal(errors.playerRatings, "A player can only be rated once per record.");
 });
 
+test("validateFormState rejects missing player rating values with clear errors", () => {
+  const errors = validateFormState(
+    {
+      watchedType: "FULL",
+      supporterSide: "NEUTRAL",
+      matchRating: "8",
+      homeTeamRating: "8",
+      awayTeamRating: "7",
+      shortReview: "",
+      watchedAt: "2026-03-26T14:00",
+      tags: [],
+      playerRatings: [{ playerId: "1", rating: "", note: "" }],
+    },
+    roster,
+  );
+
+  assert.equal(errors.playerRatings, "Each player rating must be between 1 and 10.");
+});
+
 test("validateFormState rejects players outside the match roster", () => {
   const errors = validateFormState(
     {

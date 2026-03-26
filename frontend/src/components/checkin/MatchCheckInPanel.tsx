@@ -23,7 +23,7 @@ type MatchCheckInPanelProps = {
 
 export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   const router = useRouter();
-  const { status } = useAuth();
+  const { status, refresh } = useAuth();
   const [myCheckIn, setMyCheckIn] = useState<CheckInDetail | null | undefined>(undefined);
   const [loadingRecord, setLoadingRecord] = useState(false);
   const [recordError, setRecordError] = useState<string | null>(null);
@@ -34,8 +34,8 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   const [formErrors, setFormErrors] = useState<CheckInFormErrors>({});
 
   const isFinished = match.status === "FINISHED";
-  const roster = match.matchPlayers;
-  const tagOptions = match.availableTags;
+  const roster = useMemo(() => match.matchPlayers ?? [], [match.matchPlayers]);
+  const tagOptions = useMemo(() => match.availableTags ?? [], [match.availableTags]);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,7 +64,15 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
           return;
         }
         if (error instanceof ApiError) {
-          setRecordError(error.message);
+          if (error.code === "NOT_FOUND") {
+            setRecordError("Your backend is missing the latest check-in API. Restart it after applying the newest code.");
+          } else if (error.code === "UNAUTHORIZED") {
+            setMyCheckIn(undefined);
+            setRecordError(null);
+            void refresh();
+          } else {
+            setRecordError(error.message);
+          }
         } else {
           setRecordError("Failed to load your match record.");
         }
@@ -79,12 +87,24 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [match.id, status]);
+  }, [match.id, refresh, status]);
 
   const availablePlayers = useMemo(
     () => roster.map((player) => ({ ...player, label: `${player.name} · ${player.team.name}` })),
     [roster],
   );
+
+  function toggleTag(tagId: number) {
+    setFormState((current) => {
+      const isSelected = current.tags.includes(tagId);
+      return {
+        ...current,
+        tags: isSelected
+          ? current.tags.filter((value) => value !== tagId)
+          : [...current.tags, tagId],
+      };
+    });
+  }
 
   function openCreate() {
     setFormState(createDefaultFormState());
@@ -174,6 +194,17 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
         <p className="mt-3 text-sm text-neutral-600">
           Check-ins open after the match is finished. You can come back here once the final whistle
           blows.
+        </p>
+      </section>
+    );
+  }
+
+  if (roster.length === 0 || tagOptions.length === 0) {
+    return (
+      <section className="rounded-xl border p-5 lg:col-span-3">
+        <h2 className="text-lg font-semibold">My Match Record</h2>
+        <p className="mt-3 text-sm text-neutral-600">
+          This match detail payload is missing check-in form data. Restart the backend and reload the page.
         </p>
       </section>
     );
@@ -304,23 +335,23 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
               {tagOptions.map((tag) => {
                 const selected = formState.tags.includes(tag.id);
                 return (
-                  <button
+                  <label
                     key={tag.id}
-                    type="button"
-                    onClick={() =>
-                      setFormState((current) => ({
-                        ...current,
-                        tags: selected
-                          ? current.tags.filter((value) => value !== tag.id)
-                          : [...current.tags, tag.id],
-                      }))
-                    }
-                    className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-                      selected ? "border-primary bg-primary text-primary-foreground" : "border-neutral-300 hover:bg-neutral-50"
+                    className={`cursor-pointer rounded-full border px-3 py-1 text-sm transition-colors ${
+                      selected
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-neutral-300 hover:bg-neutral-50"
                     }`}
                   >
-                    {tag.name}
-                  </button>
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => toggleTag(tag.id)}
+                      className="sr-only"
+                      aria-label={`Toggle tag ${tag.name}`}
+                    />
+                    <span>{tag.name}</span>
+                  </label>
                 );
               })}
             </div>
