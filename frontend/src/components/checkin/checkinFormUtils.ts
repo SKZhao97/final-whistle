@@ -4,8 +4,8 @@ import type {
   PlayerSummary,
   UpsertCheckInRequest,
 } from "../../types/api";
-import type { Locale } from "../../lib/i18n/config";
-import { translate } from "../../lib/i18n/core";
+import type { Locale } from "../../lib/i18n/config.js";
+import { translate } from "../../lib/i18n/core.js";
 
 export type CheckInFormState = {
   watchedType: UpsertCheckInRequest["watchedType"];

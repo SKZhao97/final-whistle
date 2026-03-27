@@ -1,7 +1,13 @@
 import type { UserCheckInHistoryResponse, UserProfileSummary } from "@/types/api";
 import { LOCALE_COOKIE_NAME, type Locale } from "@/lib/i18n/config";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+function getApiBaseUrl() {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  return "http://localhost:8080";
+}
 
 export type ApiResponse<T = unknown> = {
   success: boolean;
@@ -76,7 +82,6 @@ export async function apiRequest<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
   const headers = new Headers(options.headers);
   if (!headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
@@ -92,8 +97,32 @@ export async function apiRequest<T = unknown>(
     headers,
   };
 
-  const response = await fetch(url, config);
-  return handleResponse<T>(response);
+  let response: Response;
+  const baseUrls = Array.from(
+    new Set(
+      [
+        getApiBaseUrl(),
+        typeof window !== "undefined" ? `${window.location.protocol}//localhost:8080` : null,
+        typeof window !== "undefined" ? `${window.location.protocol}//127.0.0.1:8080` : null,
+      ].filter((value): value is string => Boolean(value)),
+    ),
+  );
+  let lastError: unknown = null;
+
+  for (const baseUrl of baseUrls) {
+    try {
+      response = await fetch(`${baseUrl}${endpoint}`, config);
+      return handleResponse<T>(response);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw new ApiError(
+    "NETWORK_ERROR",
+    "Could not reach the backend API. Make sure the backend is running on port 8080.",
+    lastError instanceof Error ? { cause: lastError.message } : undefined,
+  );
 }
 
 export function withLocaleHeaders(locale: Locale, options: RequestInit = {}): RequestInit {

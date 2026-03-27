@@ -1,39 +1,41 @@
 "use client";
 
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
-export default function LanguageSwitcher() {
-  const { locale, setLocale, t } = useLocale();
+export default function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+  const { t } = useLocale();
 
   return (
     <div
       className="inline-flex items-center rounded-full bg-transparent p-0.5 text-xs"
-      aria-label={t("locale.label")}
-      title={t("locale.label")}
+      aria-label={t("theme.label")}
+      title={t("theme.label")}
     >
       <button
         type="button"
-        onClick={() => setLocale("en")}
+        onClick={() => setTheme("light")}
         className={`rounded-full px-3 py-1.5 transition-colors ${
-          locale === "en"
+          theme === "light"
             ? "bg-[var(--fw-control-active)] text-[var(--fw-control-active-ink)]"
             : "text-[var(--fw-muted)] hover:bg-[var(--fw-field-100)] hover:text-[var(--fw-ink)]"
         }`}
-        aria-pressed={locale === "en"}
+        aria-pressed={theme === "light"}
       >
-        EN
+        {t("theme.light")}
       </button>
       <button
         type="button"
-        onClick={() => setLocale("zh")}
+        onClick={() => setTheme("dark")}
         className={`rounded-full px-3 py-1.5 transition-colors ${
-          locale === "zh"
+          theme === "dark"
             ? "bg-[var(--fw-control-active)] text-[var(--fw-control-active-ink)]"
             : "text-[var(--fw-muted)] hover:bg-[var(--fw-field-100)] hover:text-[var(--fw-ink)]"
         }`}
-        aria-pressed={locale === "zh"}
+        aria-pressed={theme === "dark"}
       >
-        中
+        {t("theme.dark")}
       </button>
     </div>
   );

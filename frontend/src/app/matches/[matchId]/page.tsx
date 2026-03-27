@@ -2,10 +2,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import MatchCheckInPanel from "@/components/checkin/MatchCheckInPanel";
+import {
+  ArchivePill,
+  LeagueMark,
+  SectionShell,
+  TeamCrest,
+} from "@/components/experience/FootballPrimitives";
 import { ApiError, matchesApi, withLocaleHeaders } from "@/lib/api/client";
+import { translate } from "@/lib/i18n/core";
 import { formatDateTime, formatNumber } from "@/lib/i18n/domain";
 import { getServerLocale } from "@/lib/i18n/server";
-import { translate } from "@/lib/i18n/core";
 import type { MatchDetail } from "@/types/api";
 
 type MatchDetailPageProps = {
@@ -14,7 +20,10 @@ type MatchDetailPageProps = {
 
 async function getMatchDetail(matchId: string, locale: "en" | "zh") {
   try {
-    return await matchesApi.detail<MatchDetail>(matchId, withLocaleHeaders(locale, { cache: "no-store" }));
+    return await matchesApi.detail<MatchDetail>(
+      matchId,
+      withLocaleHeaders(locale, { cache: "no-store" }),
+    );
   } catch (error) {
     if (error instanceof ApiError && error.code === "NOT_FOUND") {
       notFound();
@@ -35,109 +44,191 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
     recentReviews: match.recentReviews ?? [],
   };
 
+  const scoreline = `${typeof normalizedMatch.homeScore === "number" ? normalizedMatch.homeScore : "-"}:${typeof normalizedMatch.awayScore === "number" ? normalizedMatch.awayScore : "-"}`;
+  const matchMeta = [
+    normalizedMatch.round ?? translate(locale, "matches.roundTbd"),
+    formatDateTime(normalizedMatch.kickoffAt, locale),
+    normalizedMatch.venue,
+  ].filter(Boolean);
+
   return (
-    <div className="py-8">
-      <div className="mb-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-          {normalizedMatch.competition} · {normalizedMatch.season}
-        </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">
-          {normalizedMatch.homeTeam.name} {typeof normalizedMatch.homeScore === "number" ? normalizedMatch.homeScore : "-"}:
-          {typeof normalizedMatch.awayScore === "number" ? normalizedMatch.awayScore : "-"} {normalizedMatch.awayTeam.name}
-        </h1>
-        <p className="mt-2 text-sm text-neutral-600">
-          {normalizedMatch.round ?? translate(locale, "matches.roundTbd")} · {formatDateTime(normalizedMatch.kickoffAt, locale)}
-          {normalizedMatch.venue ? ` · ${normalizedMatch.venue}` : ""}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          <Link href={`/teams/${normalizedMatch.homeTeam.id}`} className="underline">
-            {normalizedMatch.homeTeam.name}
-          </Link>
-          <Link href={`/teams/${normalizedMatch.awayTeam.id}`} className="underline">
-            {normalizedMatch.awayTeam.name}
-          </Link>
+    <div className="space-y-8 pb-10">
+      <section className="match-shell match-shell--field overflow-hidden">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-3">
+              <p className="match-eyebrow">{translate(locale, "matchDetail.heroLabel")}</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <LeagueMark label={normalizedMatch.competition} />
+                <ArchivePill>{normalizedMatch.season}</ArchivePill>
+                <ArchivePill>{normalizedMatch.status}</ArchivePill>
+              </div>
+            </div>
+            <p className="text-sm text-[var(--fw-muted)]">{translate(locale, "matchDetail.heroMeta")}</p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+            <div className="flex items-center gap-4 lg:justify-start">
+              <TeamCrest team={normalizedMatch.homeTeam} />
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--fw-muted)]">
+                  {translate(locale, "enum.supporterSide.home")}
+                </p>
+                <Link
+                  href={`/teams/${normalizedMatch.homeTeam.id}`}
+                  className="text-2xl font-semibold tracking-tight text-[var(--fw-ink)] transition-colors hover:text-[var(--fw-field-900)]"
+                >
+                  {normalizedMatch.homeTeam.name}
+                </Link>
+              </div>
+            </div>
+
+            <div className="score-card rounded-[1.8rem] border border-[var(--fw-line)] px-8 py-6 text-center shadow-[0_24px_50px_rgba(16,31,24,0.08)]">
+              <p className="text-xs uppercase tracking-[0.18em] text-[var(--fw-muted)]">
+                {translate(locale, "matchDetail.contextEyebrow")}
+              </p>
+              <p className="mt-2 text-5xl font-semibold tracking-[-0.08em] text-[var(--fw-score)]">
+                {scoreline}
+              </p>
+              <p className="mt-3 text-sm text-[var(--fw-muted)]">{matchMeta.join(" · ")}</p>
+            </div>
+
+            <div className="flex items-center gap-4 lg:justify-end">
+              <div className="space-y-2 text-right">
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--fw-muted)]">
+                  {translate(locale, "enum.supporterSide.away")}
+                </p>
+                <Link
+                  href={`/teams/${normalizedMatch.awayTeam.id}`}
+                  className="text-2xl font-semibold tracking-tight text-[var(--fw-ink)] transition-colors hover:text-[var(--fw-field-900)]"
+                >
+                  {normalizedMatch.awayTeam.name}
+                </Link>
+              </div>
+              <TeamCrest team={normalizedMatch.awayTeam} />
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <MatchCheckInPanel match={normalizedMatch} />
+      <MatchCheckInPanel match={normalizedMatch} />
 
-        <section className="rounded-xl border p-5">
-          <h2 className="text-lg font-semibold">{translate(locale, "matchDetail.snapshot")}</h2>
-          <dl className="mt-4 space-y-2 text-sm text-neutral-700">
-            <div className="flex justify-between gap-4">
-              <dt>{translate(locale, "matchDetail.checkIns")}</dt>
-              <dd>{normalizedMatch.aggregates.checkInCount}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt>{translate(locale, "matchDetail.matchAvg")}</dt>
-              <dd>{formatNumber(normalizedMatch.aggregates.matchRatingAvg, locale)}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt>{normalizedMatch.homeTeam.name}</dt>
-              <dd>{formatNumber(normalizedMatch.aggregates.homeTeamRatingAvg, locale)}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt>{normalizedMatch.awayTeam.name}</dt>
-              <dd>{formatNumber(normalizedMatch.aggregates.awayTeamRatingAvg, locale)}</dd>
-            </div>
-          </dl>
-        </section>
+      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <SectionShell
+          eyebrow={translate(locale, "matchDetail.pulseEyebrow")}
+          title={translate(locale, "matchDetail.snapshot")}
+          description={translate(locale, "matchDetail.communitySubtitle")}
+          accent="paper"
+        >
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <SnapshotStat
+              label={translate(locale, "matchDetail.checkIns")}
+              value={String(normalizedMatch.aggregates.checkInCount)}
+            />
+            <SnapshotStat
+              label={translate(locale, "matchDetail.matchAvg")}
+              value={formatNumber(normalizedMatch.aggregates.matchRatingAvg, locale)}
+            />
+            <SnapshotStat
+              label={normalizedMatch.homeTeam.name}
+              value={formatNumber(normalizedMatch.aggregates.homeTeamRatingAvg, locale)}
+            />
+            <SnapshotStat
+              label={normalizedMatch.awayTeam.name}
+              value={formatNumber(normalizedMatch.aggregates.awayTeamRatingAvg, locale)}
+            />
+          </div>
+        </SectionShell>
 
-        <section className="rounded-xl border p-5 lg:col-span-2">
-          <h2 className="text-lg font-semibold">{translate(locale, "matchDetail.playerRatings")}</h2>
+        <SectionShell
+          eyebrow={translate(locale, "matchDetail.pulseEyebrow")}
+          title={translate(locale, "matchDetail.playerRatings")}
+          description={translate(locale, "matchDetail.communitySubtitle")}
+          accent="paper"
+        >
           {normalizedMatch.playerRatings.length === 0 ? (
-            <p className="mt-4 text-sm text-neutral-600">{translate(locale, "matchDetail.noPlayerRatings")}</p>
+            <p className="mt-6 text-sm text-[var(--fw-muted)]">
+              {translate(locale, "matchDetail.noPlayerRatings")}
+            </p>
           ) : (
-            <div className="mt-4 space-y-3">
+            <div className="mt-6 space-y-3">
               {normalizedMatch.playerRatings.map((rating) => (
-                <div key={rating.player.id} className="flex items-center justify-between gap-4">
-                  <div>
-                    <Link href={`/players/${rating.player.id}`} className="font-medium underline">
-                      {rating.player.name}
-                    </Link>
-                    <p className="text-sm text-neutral-600">{rating.player.team.name}</p>
+                <div
+                  key={rating.player.id}
+                  className="flex items-center justify-between gap-4 rounded-[1.2rem] border border-[var(--fw-line)] bg-white/80 px-4 py-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <TeamCrest team={rating.player.team} size="sm" />
+                    <div>
+                      <Link
+                        href={`/players/${rating.player.id}`}
+                        className="font-medium text-[var(--fw-ink)] underline-offset-4 hover:underline"
+                      >
+                        {rating.player.name}
+                      </Link>
+                      <p className="text-sm text-[var(--fw-muted)]">{rating.player.team.name}</p>
+                    </div>
                   </div>
                   <div className="text-right text-sm">
-                    <p>{formatNumber(rating.avgRating, locale)}</p>
-                    <p className="text-neutral-500">{translate(locale, "matchDetail.ratings", { count: rating.ratingCount })}</p>
+                    <p className="text-lg font-semibold text-[var(--fw-field-900)]">
+                      {formatNumber(rating.avgRating, locale)}
+                    </p>
+                    <p className="text-[var(--fw-muted)]">
+                      {translate(locale, "matchDetail.ratings", { count: rating.ratingCount })}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </section>
-
-        <section className="rounded-xl border p-5 lg:col-span-3">
-          <h2 className="text-lg font-semibold">{translate(locale, "matchDetail.recentReviews")}</h2>
-          {normalizedMatch.recentReviews.length === 0 ? (
-            <p className="mt-4 text-sm text-neutral-600">{translate(locale, "matchDetail.noReviews")}</p>
-          ) : (
-            <div className="mt-4 grid gap-4">
-              {normalizedMatch.recentReviews.map((review) => (
-                <article key={review.id} className="rounded-lg border p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-medium">{review.user.name}</p>
-                    <p className="text-sm text-neutral-500">
-                      {translate(locale, "matchDetail.matchRating", { value: review.matchRating })}
-                    </p>
-                  </div>
-                  <p className="mt-2 text-sm text-neutral-700">{review.shortReview}</p>
-                  {review.tags.length > 0 ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {review.tags.map((tag) => (
-                        <span key={tag.id} className="rounded-full bg-neutral-100 px-2 py-1 text-xs">
-                          {tag.name}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
+        </SectionShell>
       </div>
+
+      <SectionShell
+        eyebrow={translate(locale, "matchDetail.pulseEyebrow")}
+        title={translate(locale, "matchDetail.recentReviews")}
+        description={translate(locale, "matchDetail.communitySubtitle")}
+        accent="paper"
+      >
+        {normalizedMatch.recentReviews.length === 0 ? (
+          <p className="mt-6 text-sm text-[var(--fw-muted)]">
+            {translate(locale, "matchDetail.noReviews")}
+          </p>
+        ) : (
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            {normalizedMatch.recentReviews.map((review) => (
+              <article
+                key={review.id}
+                className="rounded-[1.35rem] border border-[var(--fw-line)] bg-white/82 p-5 shadow-[0_18px_35px_rgba(16,31,24,0.04)]"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <p className="font-medium text-[var(--fw-ink)]">{review.user.name}</p>
+                  <ArchivePill>
+                    {translate(locale, "matchDetail.matchRating", { value: review.matchRating })}
+                  </ArchivePill>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-[var(--fw-ink-soft)]">{review.shortReview}</p>
+                {review.tags.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {review.tags.map((tag) => (
+                      <ArchivePill key={tag.id}>{tag.name}</ArchivePill>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        )}
+      </SectionShell>
+    </div>
+  );
+}
+
+function SnapshotStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.25rem] border border-[var(--fw-line)] bg-white/82 p-4">
+      <p className="text-xs uppercase tracking-[0.18em] text-[var(--fw-muted)]">{label}</p>
+      <p className="mt-3 text-2xl font-semibold tracking-tight text-[var(--fw-field-900)]">{value}</p>
     </div>
   );
 }

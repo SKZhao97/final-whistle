@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  buildArchiveMemory,
   buildHistorySummary,
   buildPaginationMeta,
   buildProfileStats,
@@ -71,4 +72,17 @@ test("buildHistorySummary returns readable match label", () => {
   } as UserCheckInHistoryItem;
 
   assert.equal(buildHistorySummary(item), "Liverpool vs Arsenal");
+});
+
+test("buildArchiveMemory returns archive-oriented lines", () => {
+  const profile: UserProfileSummary = {
+    user: { id: 1, name: "Demo User" },
+    checkInCount: 7,
+    avgMatchRating: 8.1,
+    recentCheckInCount: 3,
+  };
+
+  const lines = buildArchiveMemory(profile);
+  assert.equal(lines[0], "Demo User has saved 7 match records so far.");
+  assert.equal(lines[1], "Recent activity: 3 records in the last 30 days.");
 });

@@ -1,34 +1,35 @@
 import Link from "next/link";
 
 import AuthStatus from "@/components/auth/AuthStatus";
+import Navigation from "@/components/layout/Navigation";
+import { BrandMark, Wordmark } from "@/components/experience/FootballPrimitives";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 import { getServerLocale } from "@/lib/i18n/server";
-import { translate } from "@/lib/i18n/core";
 
 export default async function Header() {
-  const locale = await getServerLocale();
+  await getServerLocale();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center">
-        <div className="mr-4 flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="font-bold text-xl">Final Whistle</span>
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--fw-line)] bg-[var(--fw-header)] backdrop-blur supports-[backdrop-filter]:bg-[var(--fw-header)]/90">
+      <div className="container flex h-18 max-w-screen-2xl items-center justify-between gap-6 py-3">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-3 rounded-full pr-3 transition-opacity hover:opacity-90">
+            <BrandMark />
+            <Wordmark />
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link
-              href="/matches"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              {translate(locale, "nav.matches")}
-            </Link>
-          </nav>
+          <Navigation />
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-2">
+        <div className="flex items-center gap-3">
+          <div className="header-control rounded-full p-1">
+            <ThemeSwitcher />
+          </div>
+          <div className="header-control rounded-full p-1">
             <LanguageSwitcher />
+          </div>
+          <div className="header-control rounded-full px-2 py-1">
             <AuthStatus />
-          </nav>
+          </div>
         </div>
       </div>
     </header>

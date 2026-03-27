@@ -1,5 +1,5 @@
-import { DEFAULT_LOCALE, type Locale } from "./config";
-import { messages } from "./messages";
+import { DEFAULT_LOCALE, type Locale } from "./config.js";
+import { messages } from "./messages.js";
 
 type MessageParams = Record<string, string | number>;
 

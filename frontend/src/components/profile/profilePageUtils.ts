@@ -1,6 +1,6 @@
 import type { UserCheckInHistoryItem, UserProfileSummary } from "@/types/api";
-import type { Locale } from "../../lib/i18n/config";
-import { translate } from "../../lib/i18n/core";
+import type { Locale } from "../../lib/i18n/config.js";
+import { translate } from "../../lib/i18n/core.js";
 
 export function formatAverageRating(value: number | undefined, locale: Locale = "en") {
   if (value === undefined || Number.isNaN(value)) {
@@ -38,4 +38,16 @@ export function buildHistorySummary(item: UserCheckInHistoryItem, locale: Locale
   return locale === "zh"
     ? `${item.match.homeTeam.name} 对 ${item.match.awayTeam.name}`
     : `${item.match.homeTeam.name} vs ${item.match.awayTeam.name}`;
+}
+
+export function buildArchiveMemory(profile: UserProfileSummary, locale: Locale = "en") {
+  return [
+    translate(locale, "profile.memory.lineOne", {
+      name: profile.user.name,
+      count: profile.checkInCount,
+    }),
+    translate(locale, "profile.memory.lineTwo", {
+      recent: profile.recentCheckInCount,
+    }),
+  ];
 }

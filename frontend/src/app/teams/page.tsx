@@ -7,13 +7,13 @@ export default async function TeamsPage() {
 
   return (
     <div className="py-8">
-      <h1 className="text-3xl font-bold tracking-tight">{translate(locale, "teams.title")}</h1>
-      <p className="mt-3 text-sm text-neutral-600">
+      <h1 className="text-3xl font-bold tracking-tight text-[var(--fw-ink)]">{translate(locale, "teams.title")}</h1>
+      <p className="mt-3 text-sm text-[var(--fw-muted)]">
         {translate(locale, "teams.body")}
       </p>
       <Link
         href="/matches"
-        className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        className="fw-button fw-button--secondary mt-6"
       >
         {translate(locale, "home.browseMatches")}
       </Link>
