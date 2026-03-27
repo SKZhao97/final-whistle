@@ -32,9 +32,9 @@ func (e *CheckInValidationError) Error() string {
 }
 
 type CheckInService interface {
-	GetMyCheckIn(matchID, userID uint) (*dto.CheckInDetailDTO, error)
-	CreateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error)
-	UpdateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error)
+	GetMyCheckIn(matchID, userID uint, locale string) (*dto.CheckInDetailDTO, error)
+	CreateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error)
+	UpdateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error)
 }
 
 type checkInService struct {
@@ -45,7 +45,7 @@ func NewCheckInService(repo repository.CheckInRepository) CheckInService {
 	return &checkInService{repo: repo}
 }
 
-func (s *checkInService) GetMyCheckIn(matchID, userID uint) (*dto.CheckInDetailDTO, error) {
+func (s *checkInService) GetMyCheckIn(matchID, userID uint, locale string) (*dto.CheckInDetailDTO, error) {
 	if _, err := s.loadMatch(matchID); err != nil {
 		return nil, err
 	}
@@ -58,10 +58,10 @@ func (s *checkInService) GetMyCheckIn(matchID, userID uint) (*dto.CheckInDetailD
 		return nil, err
 	}
 
-	return mapCheckInDetail(checkIn), nil
+	return mapCheckInDetail(checkIn, locale), nil
 }
 
-func (s *checkInService) CreateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error) {
+func (s *checkInService) CreateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error) {
 	req = normalizeUpsertRequest(req)
 
 	match, err := s.loadMatch(matchID)
@@ -107,10 +107,10 @@ func (s *checkInService) CreateCheckIn(matchID, userID uint, req dto.UpsertCheck
 		return nil, err
 	}
 
-	return mapCheckInDetail(created), nil
+	return mapCheckInDetail(created, locale), nil
 }
 
-func (s *checkInService) UpdateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error) {
+func (s *checkInService) UpdateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error) {
 	req = normalizeUpsertRequest(req)
 
 	match, err := s.loadMatch(matchID)
@@ -162,7 +162,7 @@ func (s *checkInService) UpdateCheckIn(matchID, userID uint, req dto.UpsertCheck
 		return nil, err
 	}
 
-	return mapCheckInDetail(updated), nil
+	return mapCheckInDetail(updated, locale), nil
 }
 
 func (s *checkInService) loadMatch(matchID uint) (*model.Match, error) {
@@ -298,18 +298,14 @@ func buildPlayerRatings(checkInID uint, ratings []dto.PlayerRatingInputDTO) []mo
 	return result
 }
 
-func mapCheckInDetail(checkIn *model.CheckIn) *dto.CheckInDetailDTO {
+func mapCheckInDetail(checkIn *model.CheckIn, locale string) *dto.CheckInDetailDTO {
 	if checkIn == nil {
 		return nil
 	}
 
 	tags := make([]dto.TagDTO, 0, len(checkIn.Tags))
 	for _, tag := range checkIn.Tags {
-		tags = append(tags, dto.TagDTO{
-			ID:   tag.ID,
-			Name: tag.Name,
-			Slug: tag.Slug,
-		})
+		tags = append(tags, toTagDTO(tag, locale))
 	}
 
 	playerRatings := make([]dto.CheckInPlayerRatingDTO, 0, len(checkIn.PlayerRatings))

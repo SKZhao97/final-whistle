@@ -1,14 +1,18 @@
 "use client";
 
+import { useLocale } from "@/components/i18n/LocaleProvider";
+
 export default function MatchDetailError() {
+  const { t } = useLocale();
+
   return (
     <div className="py-10">
-      <h1 className="text-2xl font-semibold">Could not load match details</h1>
+      <h1 className="text-2xl font-semibold">{t("matchDetail.error.title")}</h1>
       <p className="mt-2 text-sm text-neutral-600">
-        The public match detail page is temporarily unavailable.
+        {t("matchDetail.error.body")}
       </p>
       <p className="mt-2 text-sm text-neutral-600">
-        If the frontend was updated recently, restart the backend and reload this page.
+        {t("matchDetail.error.restart")}
       </p>
     </div>
   );

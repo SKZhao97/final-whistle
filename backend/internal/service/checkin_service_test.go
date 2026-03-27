@@ -162,7 +162,7 @@ func (f *fakeCheckInRepository) findCheckInByID(id uint) (*model.CheckIn, bool) 
 func TestCheckInServiceGetMyCheckInReturnsNilWhenMissing(t *testing.T) {
 	svc := NewCheckInService(newFakeCheckInRepository())
 
-	result, err := svc.GetMyCheckIn(1, 10)
+	result, err := svc.GetMyCheckIn(1, 10, "en")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -175,7 +175,7 @@ func TestCheckInServiceCreateCheckInSuccess(t *testing.T) {
 	repo := newFakeCheckInRepository()
 	svc := NewCheckInService(repo)
 
-	result, err := svc.CreateCheckIn(1, 10, validCheckInRequest())
+	result, err := svc.CreateCheckIn(1, 10, validCheckInRequest(), "zh")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -185,6 +185,9 @@ func TestCheckInServiceCreateCheckInSuccess(t *testing.T) {
 	if len(result.Tags) != 2 || len(result.PlayerRatings) != 2 {
 		t.Fatalf("expected tags and player ratings, got %#v", result)
 	}
+	if result.Tags[0].Name == "" {
+		t.Fatalf("expected localized tag names, got %#v", result.Tags)
+	}
 }
 
 func TestCheckInServiceCreateRejectsDuplicateCreate(t *testing.T) {
@@ -192,11 +195,11 @@ func TestCheckInServiceCreateRejectsDuplicateCreate(t *testing.T) {
 	svc := NewCheckInService(repo)
 	req := validCheckInRequest()
 
-	if _, err := svc.CreateCheckIn(1, 10, req); err != nil {
+	if _, err := svc.CreateCheckIn(1, 10, req, "en"); err != nil {
 		t.Fatalf("expected initial create to succeed, got %v", err)
 	}
 
-	_, err := svc.CreateCheckIn(1, 10, req)
+	_, err := svc.CreateCheckIn(1, 10, req, "en")
 	if !errors.Is(err, ErrCheckInAlreadyExists) {
 		t.Fatalf("expected ErrCheckInAlreadyExists, got %v", err)
 	}
@@ -206,7 +209,7 @@ func TestCheckInServiceCreateRejectsNonFinishedMatch(t *testing.T) {
 	repo := newFakeCheckInRepository()
 	svc := NewCheckInService(repo)
 
-	_, err := svc.CreateCheckIn(2, 10, validCheckInRequest())
+	_, err := svc.CreateCheckIn(2, 10, validCheckInRequest(), "en")
 	assertValidationError(t, err)
 }
 
@@ -266,7 +269,7 @@ func TestCheckInServiceCreateRejectsInvalidPayloadCases(t *testing.T) {
 			repo := newFakeCheckInRepository()
 			svc := NewCheckInService(repo)
 
-			_, err := svc.CreateCheckIn(1, 10, tc.req)
+			_, err := svc.CreateCheckIn(1, 10, tc.req, "en")
 			assertValidationError(t, err)
 		})
 	}
@@ -285,7 +288,7 @@ func TestCheckInServiceAllowsMoreThanFiveRosterPlayers(t *testing.T) {
 		{PlayerID: 106, Rating: 7},
 	}
 
-	result, err := svc.CreateCheckIn(1, 10, req)
+	result, err := svc.CreateCheckIn(1, 10, req, "en")
 	if err != nil {
 		t.Fatalf("expected create to allow full roster rating, got %v", err)
 	}
@@ -299,7 +302,7 @@ func TestCheckInServiceUpdateReplacesChildren(t *testing.T) {
 	svc := NewCheckInService(repo)
 	req := validCheckInRequest()
 
-	created, err := svc.CreateCheckIn(1, 10, req)
+	created, err := svc.CreateCheckIn(1, 10, req, "en")
 	if err != nil {
 		t.Fatalf("expected create to succeed, got %v", err)
 	}
@@ -309,7 +312,7 @@ func TestCheckInServiceUpdateReplacesChildren(t *testing.T) {
 	updatedReq.PlayerRatings = []dto.PlayerRatingInputDTO{{PlayerID: 102, Rating: 9}}
 	updatedReq.MatchRating = 9
 
-	updated, err := svc.UpdateCheckIn(1, 10, updatedReq)
+	updated, err := svc.UpdateCheckIn(1, 10, updatedReq, "en")
 	if err != nil {
 		t.Fatalf("expected update to succeed, got %v", err)
 	}
@@ -328,7 +331,7 @@ func TestCheckInServiceUpdateReplacesChildren(t *testing.T) {
 func TestCheckInServiceUpdateRejectsMissingCheckIn(t *testing.T) {
 	svc := NewCheckInService(newFakeCheckInRepository())
 
-	_, err := svc.UpdateCheckIn(1, 10, validCheckInRequest())
+	_, err := svc.UpdateCheckIn(1, 10, validCheckInRequest(), "en")
 	if !errors.Is(err, ErrCheckInMissing) {
 		t.Fatalf("expected ErrCheckInMissing, got %v", err)
 	}
@@ -339,7 +342,7 @@ func TestCheckInServiceCreateRollsBackOnChildWriteFailure(t *testing.T) {
 	repo.store.failReplaceTags = errors.New("boom")
 	svc := NewCheckInService(repo)
 
-	_, err := svc.CreateCheckIn(1, 10, validCheckInRequest())
+	_, err := svc.CreateCheckIn(1, 10, validCheckInRequest(), "en")
 	if err == nil {
 		t.Fatalf("expected error")
 	}
@@ -352,7 +355,7 @@ func TestCheckInServiceUpdateRollsBackOnChildWriteFailure(t *testing.T) {
 	repo := newFakeCheckInRepository()
 	svc := NewCheckInService(repo)
 
-	created, err := svc.CreateCheckIn(1, 10, validCheckInRequest())
+	created, err := svc.CreateCheckIn(1, 10, validCheckInRequest(), "en")
 	if err != nil {
 		t.Fatalf("expected create to succeed, got %v", err)
 	}
@@ -363,7 +366,7 @@ func TestCheckInServiceUpdateRollsBackOnChildWriteFailure(t *testing.T) {
 	updateReq.Tags = []uint{2}
 	updateReq.PlayerRatings = []dto.PlayerRatingInputDTO{{PlayerID: 102, Rating: 9}}
 
-	_, err = svc.UpdateCheckIn(1, 10, updateReq)
+	_, err = svc.UpdateCheckIn(1, 10, updateReq, "en")
 	if err == nil {
 		t.Fatalf("expected update error")
 	}

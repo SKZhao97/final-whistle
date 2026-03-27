@@ -10,7 +10,7 @@ import (
 
 type MatchService interface {
 	ListMatches(params repository.MatchListParams) (dto.MatchListResponseDTO, error)
-	GetMatchDetail(id uint) (*dto.MatchDetailDTO, error)
+	GetMatchDetail(id uint, locale string) (*dto.MatchDetailDTO, error)
 }
 
 type matchService struct {
@@ -61,7 +61,7 @@ func (s *matchService) ListMatches(params repository.MatchListParams) (dto.Match
 	}, nil
 }
 
-func (s *matchService) GetMatchDetail(id uint) (*dto.MatchDetailDTO, error) {
+func (s *matchService) GetMatchDetail(id uint, locale string) (*dto.MatchDetailDTO, error) {
 	match, err := s.repo.FindMatchByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -93,11 +93,7 @@ func (s *matchService) GetMatchDetail(id uint) (*dto.MatchDetailDTO, error) {
 
 	tagItems := make([]dto.TagDTO, 0, len(availableTags))
 	for _, tag := range availableTags {
-		tagItems = append(tagItems, dto.TagDTO{
-			ID:   tag.ID,
-			Name: tag.Name,
-			Slug: tag.Slug,
-		})
+		tagItems = append(tagItems, toTagDTO(tag, locale))
 	}
 
 	rosterItems := make([]dto.PlayerSummaryDTO, 0, len(rosterPlayers))
@@ -144,7 +140,7 @@ func (s *matchService) GetMatchDetail(id uint) (*dto.MatchDetailDTO, error) {
 	for _, review := range reviews {
 		tags := make([]dto.TagDTO, 0, len(review.Tags))
 		for _, tag := range review.Tags {
-			tags = append(tags, dto.TagDTO{ID: tag.ID, Name: tag.Name, Slug: tag.Slug})
+			tags = append(tags, toTagDTO(tag, locale))
 		}
 		reviewItems = append(reviewItems, dto.MatchRecentReviewDTO{
 			ID: review.CheckInID,

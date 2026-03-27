@@ -17,7 +17,7 @@
 
 - `final-whistle-review.md`
 - `final-whistle-development-plan.md`
-- `final-whistle-v1-spec.md`
+- `mvp/final-whistle-v1-spec.md`
 - `final-whistle-milestones.md`
 
 ---

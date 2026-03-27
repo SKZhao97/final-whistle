@@ -37,7 +37,7 @@ func (f *fakeUserRepository) GetUserCheckInHistory(userID uint, params repositor
 
 func TestUserServiceGetProfileSummary(t *testing.T) {
 	favoriteTeam := &model.Team{ID: 10, Name: "Arsenal", Slug: "arsenal"}
-	tag := &model.Tag{ID: 7, Name: "Electric", Slug: "electric"}
+	tag := &model.Tag{ID: 7, Name: "Electric", NameEn: "Electric", NameZh: "电光火石", Slug: "electric"}
 	repo := &fakeUserRepository{
 		profileRecord: &repository.UserProfileSummaryRecord{
 			User:               model.User{ID: 1, Name: "Demo User"},
@@ -52,7 +52,7 @@ func TestUserServiceGetProfileSummary(t *testing.T) {
 	}
 
 	service := NewUserService(repo)
-	result, err := service.GetProfileSummary(1)
+	result, err := service.GetProfileSummary(1, "zh")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -62,14 +62,14 @@ func TestUserServiceGetProfileSummary(t *testing.T) {
 	if result.FavoriteTeam == nil || result.FavoriteTeam.Name != "Arsenal" {
 		t.Fatalf("expected favorite team to be mapped")
 	}
-	if result.MostUsedTag == nil || result.MostUsedTag.Name != "Electric" {
+	if result.MostUsedTag == nil || result.MostUsedTag.Name != "电光火石" {
 		t.Fatalf("expected most used tag to be mapped")
 	}
 }
 
 func TestUserServiceGetProfileSummaryNotFound(t *testing.T) {
 	service := NewUserService(&fakeUserRepository{profileErr: gorm.ErrRecordNotFound})
-	_, err := service.GetProfileSummary(1)
+	_, err := service.GetProfileSummary(1, "en")
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
 	}
@@ -90,7 +90,7 @@ func TestUserServiceGetCheckInHistory(t *testing.T) {
 				WatchedAt:      now,
 				CreatedAt:      now,
 				UpdatedAt:      now,
-				Tags:           []model.Tag{{ID: 1, Name: "Electric", Slug: "electric"}},
+				Tags:           []model.Tag{{ID: 1, Name: "Electric", NameEn: "Electric", NameZh: "电光火石", Slug: "electric"}},
 				Match: model.Match{
 					ID:          2,
 					Competition: "Premier League",
@@ -106,7 +106,7 @@ func TestUserServiceGetCheckInHistory(t *testing.T) {
 	}
 
 	service := NewUserService(repo)
-	result, err := service.GetCheckInHistory(1, 0, 100)
+	result, err := service.GetCheckInHistory(1, 0, 100, "zh")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -121,6 +121,9 @@ func TestUserServiceGetCheckInHistory(t *testing.T) {
 	}
 	if len(result.Items[0].Tags) != 1 {
 		t.Fatalf("expected tags to be mapped")
+	}
+	if result.Items[0].Tags[0].Name != "电光火石" {
+		t.Fatalf("expected localized tag label, got %#v", result.Items[0].Tags[0])
 	}
 }
 

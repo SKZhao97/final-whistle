@@ -29,7 +29,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.GetProfileSummary(user.ID)
+	result, err := h.service.GetProfileSummary(user.ID, middleware.CurrentLocale(c))
 	if err != nil {
 		if err == service.ErrNotFound {
 			utils.NotFoundResponse(c, "User not found")
@@ -47,6 +47,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 // 查询参数:
 //   - page: 页码，默认1
 //   - pageSize: 每页大小，默认20，最大50
+//
 // 响应: UserCheckInHistoryResponseDTO 或错误响应
 func (h *UserHandler) GetCheckInHistory(c *gin.Context) {
 	user, ok := middleware.CurrentUser(c)
@@ -59,7 +60,7 @@ func (h *UserHandler) GetCheckInHistory(c *gin.Context) {
 	page := parseInt(c.Query("page"), 1)
 	pageSize := parseInt(c.Query("pageSize"), 20)
 
-	result, err := h.service.GetCheckInHistory(user.ID, page, pageSize)
+	result, err := h.service.GetCheckInHistory(user.ID, page, pageSize, middleware.CurrentLocale(c))
 	if err != nil {
 		utils.InternalErrorResponse(c, "Failed to load check-in history", nil)
 		return

@@ -586,6 +586,6 @@ check-in 表单必须支持以下字段：
 - 本文档：主 spec
 - `final-whistle-schema-draft.md`：数据库设计
 - `final-whistle-api-dto-draft.md`：接口契约
-- `final-whistle-technical-design-main.md`：系统设计与开发策略
+- `mvp/final-whistle-technical-design-main.md`：系统设计与开发策略
 
 如果三者冲突，以本文档和后续确认后的接口/schema 文档为准。

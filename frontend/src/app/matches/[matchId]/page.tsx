@@ -2,16 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import MatchCheckInPanel from "@/components/checkin/MatchCheckInPanel";
-import { ApiError, matchesApi } from "@/lib/api/client";
+import { ApiError, matchesApi, withLocaleHeaders } from "@/lib/api/client";
+import { formatDateTime, formatNumber } from "@/lib/i18n/domain";
+import { getServerLocale } from "@/lib/i18n/server";
+import { translate } from "@/lib/i18n/core";
 import type { MatchDetail } from "@/types/api";
 
 type MatchDetailPageProps = {
   params: Promise<{ matchId: string }>;
 };
 
-async function getMatchDetail(matchId: string) {
+async function getMatchDetail(matchId: string, locale: "en" | "zh") {
   try {
-    return await matchesApi.detail<MatchDetail>(matchId, { cache: "no-store" });
+    return await matchesApi.detail<MatchDetail>(matchId, withLocaleHeaders(locale, { cache: "no-store" }));
   } catch (error) {
     if (error instanceof ApiError && error.code === "NOT_FOUND") {
       notFound();
@@ -22,7 +25,8 @@ async function getMatchDetail(matchId: string) {
 
 export default async function MatchDetailPage({ params }: MatchDetailPageProps) {
   const { matchId } = await params;
-  const match = await getMatchDetail(matchId);
+  const locale = await getServerLocale();
+  const match = await getMatchDetail(matchId, locale);
   const normalizedMatch: MatchDetail = {
     ...match,
     availableTags: match.availableTags ?? [],
@@ -42,7 +46,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
           {typeof normalizedMatch.awayScore === "number" ? normalizedMatch.awayScore : "-"} {normalizedMatch.awayTeam.name}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
-          {normalizedMatch.round ?? "Round TBD"} · {new Date(normalizedMatch.kickoffAt).toLocaleString()}
+          {normalizedMatch.round ?? translate(locale, "matches.roundTbd")} · {formatDateTime(normalizedMatch.kickoffAt, locale)}
           {normalizedMatch.venue ? ` · ${normalizedMatch.venue}` : ""}
         </p>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
@@ -59,31 +63,31 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
         <MatchCheckInPanel match={normalizedMatch} />
 
         <section className="rounded-xl border p-5">
-          <h2 className="text-lg font-semibold">Community Snapshot</h2>
+          <h2 className="text-lg font-semibold">{translate(locale, "matchDetail.snapshot")}</h2>
           <dl className="mt-4 space-y-2 text-sm text-neutral-700">
             <div className="flex justify-between gap-4">
-              <dt>Check-ins</dt>
-                  <dd>{normalizedMatch.aggregates.checkInCount}</dd>
+              <dt>{translate(locale, "matchDetail.checkIns")}</dt>
+              <dd>{normalizedMatch.aggregates.checkInCount}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt>Match avg</dt>
-                  <dd>{normalizedMatch.aggregates.matchRatingAvg ?? "No samples"}</dd>
+              <dt>{translate(locale, "matchDetail.matchAvg")}</dt>
+              <dd>{formatNumber(normalizedMatch.aggregates.matchRatingAvg, locale)}</dd>
             </div>
             <div className="flex justify-between gap-4">
-                  <dt>{normalizedMatch.homeTeam.name}</dt>
-                  <dd>{normalizedMatch.aggregates.homeTeamRatingAvg ?? "No samples"}</dd>
+              <dt>{normalizedMatch.homeTeam.name}</dt>
+              <dd>{formatNumber(normalizedMatch.aggregates.homeTeamRatingAvg, locale)}</dd>
             </div>
             <div className="flex justify-between gap-4">
-                  <dt>{normalizedMatch.awayTeam.name}</dt>
-                  <dd>{normalizedMatch.aggregates.awayTeamRatingAvg ?? "No samples"}</dd>
+              <dt>{normalizedMatch.awayTeam.name}</dt>
+              <dd>{formatNumber(normalizedMatch.aggregates.awayTeamRatingAvg, locale)}</dd>
             </div>
           </dl>
         </section>
 
         <section className="rounded-xl border p-5 lg:col-span-2">
-          <h2 className="text-lg font-semibold">Player Ratings</h2>
+          <h2 className="text-lg font-semibold">{translate(locale, "matchDetail.playerRatings")}</h2>
           {normalizedMatch.playerRatings.length === 0 ? (
-            <p className="mt-4 text-sm text-neutral-600">No player ratings yet.</p>
+            <p className="mt-4 text-sm text-neutral-600">{translate(locale, "matchDetail.noPlayerRatings")}</p>
           ) : (
             <div className="mt-4 space-y-3">
               {normalizedMatch.playerRatings.map((rating) => (
@@ -95,8 +99,8 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
                     <p className="text-sm text-neutral-600">{rating.player.team.name}</p>
                   </div>
                   <div className="text-right text-sm">
-                    <p>{rating.avgRating ?? "No avg"}</p>
-                    <p className="text-neutral-500">{rating.ratingCount} ratings</p>
+                    <p>{formatNumber(rating.avgRating, locale)}</p>
+                    <p className="text-neutral-500">{translate(locale, "matchDetail.ratings", { count: rating.ratingCount })}</p>
                   </div>
                 </div>
               ))}
@@ -105,9 +109,9 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
         </section>
 
         <section className="rounded-xl border p-5 lg:col-span-3">
-          <h2 className="text-lg font-semibold">Recent Reviews</h2>
+          <h2 className="text-lg font-semibold">{translate(locale, "matchDetail.recentReviews")}</h2>
           {normalizedMatch.recentReviews.length === 0 ? (
-            <p className="mt-4 text-sm text-neutral-600">No reviews yet.</p>
+            <p className="mt-4 text-sm text-neutral-600">{translate(locale, "matchDetail.noReviews")}</p>
           ) : (
             <div className="mt-4 grid gap-4">
               {normalizedMatch.recentReviews.map((review) => (
@@ -115,7 +119,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
                   <div className="flex items-center justify-between gap-4">
                     <p className="font-medium">{review.user.name}</p>
                     <p className="text-sm text-neutral-500">
-                      Match rating {review.matchRating}
+                      {translate(locale, "matchDetail.matchRating", { value: review.matchRating })}
                     </p>
                   </div>
                   <p className="mt-2 text-sm text-neutral-700">{review.shortReview}</p>

@@ -1,8 +1,13 @@
-export default function TeamNotFound() {
+import { getServerLocale } from "@/lib/i18n/server";
+import { translate } from "@/lib/i18n/core";
+
+export default async function TeamNotFound() {
+  const locale = await getServerLocale();
+
   return (
     <div className="py-10">
-      <h1 className="text-2xl font-semibold">Team not found</h1>
-      <p className="mt-2 text-sm text-neutral-600">The requested team does not exist.</p>
+      <h1 className="text-2xl font-semibold">{translate(locale, "team.notFound.title")}</h1>
+      <p className="mt-2 text-sm text-neutral-600">{translate(locale, "team.notFound.body")}</p>
     </div>
   );
 }

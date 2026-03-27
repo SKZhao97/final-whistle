@@ -4,6 +4,8 @@ import type {
   PlayerSummary,
   UpsertCheckInRequest,
 } from "../../types/api";
+import type { Locale } from "../../lib/i18n/config";
+import { translate } from "../../lib/i18n/core";
 
 export type CheckInFormState = {
   watchedType: UpsertCheckInRequest["watchedType"];
@@ -72,33 +74,34 @@ export function createFormStateFromCheckIn(checkIn: CheckInDetail): CheckInFormS
 export function validateFormState(
   formState: CheckInFormState,
   roster: PlayerSummary[],
+  locale: Locale = "en",
 ): CheckInFormErrors {
   const errors: CheckInFormErrors = {};
   const rosterIds = new Set(roster.map((player) => player.id));
 
   if (!formState.watchedType) {
-    errors.watchedType = "Watched type is required.";
+    errors.watchedType = translate(locale, "validation.watchedTypeRequired");
   }
   if (!formState.supporterSide) {
-    errors.supporterSide = "Supporter side is required.";
+    errors.supporterSide = translate(locale, "validation.supporterSideRequired");
   }
 
-  validateRatingString(formState.matchRating, "Match rating", errors, "matchRating");
-  validateRatingString(formState.homeTeamRating, "Home team rating", errors, "homeTeamRating");
-  validateRatingString(formState.awayTeamRating, "Away team rating", errors, "awayTeamRating");
+  validateRatingString(formState.matchRating, translate(locale, "checkin.matchRating"), errors, "matchRating", locale);
+  validateRatingString(formState.homeTeamRating, translate(locale, "checkin.homeTeamRating"), errors, "homeTeamRating", locale);
+  validateRatingString(formState.awayTeamRating, translate(locale, "checkin.awayTeamRating"), errors, "awayTeamRating", locale);
 
   if (formState.shortReview.length > MAX_SHORT_REVIEW_LENGTH) {
-    errors.shortReview = "Short review must be 280 characters or fewer.";
+    errors.shortReview = translate(locale, "validation.shortReviewLength");
   }
   if (!formState.watchedAt) {
-    errors.watchedAt = "Watched at is required.";
+    errors.watchedAt = translate(locale, "validation.watchedAtRequired");
   } else if (Number.isNaN(new Date(formState.watchedAt).getTime())) {
-    errors.watchedAt = "Watched at must be a valid date and time.";
+    errors.watchedAt = translate(locale, "validation.watchedAtInvalid");
   }
 
   const selectedPlayers = new Set<number>();
   for (const entry of formState.playerRatings) {
-    const playerRatingError = validatePlayerRatingEntry(entry, rosterIds, selectedPlayers);
+    const playerRatingError = validatePlayerRatingEntry(entry, rosterIds, selectedPlayers, locale);
     if (playerRatingError) {
       errors.playerRatings = playerRatingError;
       break;
@@ -150,10 +153,11 @@ function validateRatingString(
   label: string,
   errors: CheckInFormErrors,
   key: "matchRating" | "homeTeamRating" | "awayTeamRating",
+  locale: Locale,
 ) {
   const numericValue = parseRequiredNumber(value);
   if (numericValue === null || numericValue < 1 || numericValue > 10) {
-    errors[key] = `${label} must be between 1 and 10.`;
+    errors[key] = translate(locale, "validation.ratingRange", { label });
   }
 }
 
@@ -169,25 +173,26 @@ function validatePlayerRatingEntry(
   entry: CheckInFormState["playerRatings"][number],
   rosterIds: Set<number>,
   selectedPlayers: Set<number>,
+  locale: Locale,
 ) {
   const playerId = parseRequiredNumber(entry.playerId);
   if (playerId === null) {
-    return "Each player rating needs a selected player.";
+    return translate(locale, "validation.playerRequired");
   }
   if (!rosterIds.has(playerId)) {
-    return "Player ratings must use players from this match roster.";
+    return translate(locale, "validation.playerRoster");
   }
   if (selectedPlayers.has(playerId)) {
-    return "A player can only be rated once per record.";
+    return translate(locale, "validation.playerDuplicate");
   }
   selectedPlayers.add(playerId);
 
   const rating = parseRequiredNumber(entry.rating);
   if (rating === null || rating < 1 || rating > 10) {
-    return "Each player rating must be between 1 and 10.";
+    return translate(locale, "validation.playerRatingRange");
   }
   if (entry.note.length > MAX_PLAYER_NOTE_LENGTH) {
-    return "Each player note must be 80 characters or fewer.";
+    return translate(locale, "validation.playerNoteLength");
   }
 
   return undefined;

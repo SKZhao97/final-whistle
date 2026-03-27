@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"final-whistle/backend/internal/middleware"
 	"final-whistle/backend/internal/repository"
 	"final-whistle/backend/internal/service"
 	"final-whistle/backend/internal/utils"
@@ -47,7 +48,7 @@ func (h *MatchHandler) Detail(c *gin.Context) {
 		utils.ValidationErrorResponse(c, "invalid match id", nil)
 		return
 	}
-	result, err := h.service.GetMatchDetail(uint(id))
+	result, err := h.service.GetMatchDetail(uint(id), middleware.CurrentLocale(c))
 	if err != nil {
 		if err == service.ErrNotFound {
 			utils.NotFoundResponse(c, "Match not found")

@@ -22,15 +22,15 @@ type fakeCheckInService struct {
 	updateErr    error
 }
 
-func (f *fakeCheckInService) GetMyCheckIn(matchID, userID uint) (*dto.CheckInDetailDTO, error) {
+func (f *fakeCheckInService) GetMyCheckIn(matchID, userID uint, locale string) (*dto.CheckInDetailDTO, error) {
 	return f.getResult, f.getErr
 }
 
-func (f *fakeCheckInService) CreateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error) {
+func (f *fakeCheckInService) CreateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error) {
 	return f.createResult, f.createErr
 }
 
-func (f *fakeCheckInService) UpdateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error) {
+func (f *fakeCheckInService) UpdateCheckIn(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error) {
 	return f.updateResult, f.updateErr
 }
 

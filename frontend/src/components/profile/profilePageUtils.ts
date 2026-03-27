@@ -1,24 +1,26 @@
 import type { UserCheckInHistoryItem, UserProfileSummary } from "@/types/api";
+import type { Locale } from "../../lib/i18n/config";
+import { translate } from "../../lib/i18n/core";
 
-export function formatAverageRating(value?: number) {
+export function formatAverageRating(value: number | undefined, locale: Locale = "en") {
   if (value === undefined || Number.isNaN(value)) {
-    return "No ratings yet";
+    return translate(locale, "stats.noRatingsYet");
   }
   return value.toFixed(1);
 }
 
-export function buildProfileStats(profile: UserProfileSummary) {
+export function buildProfileStats(profile: UserProfileSummary, locale: Locale = "en") {
   return [
-    { label: "Check-ins", value: String(profile.checkInCount) },
-    { label: "Avg Match Rating", value: formatAverageRating(profile.avgMatchRating) },
-    { label: "Recent 30 Days", value: String(profile.recentCheckInCount) },
+    { label: translate(locale, "stats.checkIns"), value: String(profile.checkInCount) },
+    { label: translate(locale, "stats.avgMatchRating"), value: formatAverageRating(profile.avgMatchRating, locale) },
+    { label: translate(locale, "stats.recent30Days"), value: String(profile.recentCheckInCount) },
     {
-      label: "Favorite Team",
-      value: profile.favoriteTeam?.name ?? "Not enough data",
+      label: translate(locale, "stats.favoriteTeam"),
+      value: profile.favoriteTeam?.name ?? translate(locale, "stats.notEnoughData"),
     },
     {
-      label: "Most Used Tag",
-      value: profile.mostUsedTag?.name ?? "Not enough data",
+      label: translate(locale, "stats.mostUsedTag"),
+      value: profile.mostUsedTag?.name ?? translate(locale, "stats.notEnoughData"),
     },
   ];
 }
@@ -32,6 +34,8 @@ export function buildPaginationMeta(total: number, page: number, pageSize: numbe
   };
 }
 
-export function buildHistorySummary(item: UserCheckInHistoryItem) {
-  return `${item.match.homeTeam.name} vs ${item.match.awayTeam.name}`;
+export function buildHistorySummary(item: UserCheckInHistoryItem, locale: Locale = "en") {
+  return locale === "zh"
+    ? `${item.match.homeTeam.name} 对 ${item.match.awayTeam.name}`
+    : `${item.match.homeTeam.name} vs ${item.match.awayTeam.name}`;
 }

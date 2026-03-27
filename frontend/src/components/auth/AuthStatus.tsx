@@ -3,12 +3,14 @@
 import Link from "next/link";
 
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function AuthStatus() {
   const { status, user, logout } = useAuth();
+  const { t } = useLocale();
 
   if (status === "loading") {
-    return <span className="text-sm text-neutral-500">Checking session...</span>;
+    return <span className="text-sm text-neutral-500">{t("nav.checkingSession")}</span>;
   }
 
   if (status === "authenticated" && user) {
@@ -19,14 +21,14 @@ export default function AuthStatus() {
           href="/me"
           className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-neutral-50"
         >
-          My Profile
+          {t("nav.profile")}
         </Link>
         <button
           type="button"
           onClick={() => void logout()}
           className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
-          Log Out
+          {t("nav.logout")}
         </button>
       </div>
     );
@@ -37,7 +39,7 @@ export default function AuthStatus() {
       href="/login"
       className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
     >
-      Dev Login
+      {t("nav.devLogin")}
     </Link>
   );
 }

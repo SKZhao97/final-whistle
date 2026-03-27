@@ -1,7 +1,12 @@
+"use client";
+
+import { useLocale } from "@/components/i18n/LocaleProvider";
+
 export default function Navigation() {
+  const { t } = useLocale();
   const navItems = [
-    { href: '/matches', label: 'Matches' },
-    { href: '/me', label: 'My Profile' },
+    { href: "/matches", label: t("nav.matches") },
+    { href: "/me", label: t("nav.profile") },
   ];
 
   return (

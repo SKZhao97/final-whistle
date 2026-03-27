@@ -18,11 +18,11 @@ type fakeUserService struct {
 	historyErr error
 }
 
-func (f *fakeUserService) GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO, error) {
+func (f *fakeUserService) GetProfileSummary(userID uint, locale string) (*dto.UserProfileSummaryDTO, error) {
 	return f.profile, f.profileErr
 }
 
-func (f *fakeUserService) GetCheckInHistory(userID uint, page, pageSize int) (*dto.UserCheckInHistoryResponseDTO, error) {
+func (f *fakeUserService) GetCheckInHistory(userID uint, page, pageSize int, locale string) (*dto.UserCheckInHistoryResponseDTO, error) {
 	return f.history, f.historyErr
 }
 

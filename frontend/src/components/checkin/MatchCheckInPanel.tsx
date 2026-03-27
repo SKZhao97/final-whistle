@@ -14,7 +14,10 @@ import {
   type CheckInFormState,
   validateFormState,
 } from "@/components/checkin/checkinFormUtils";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 import { ApiError, matchesApi } from "@/lib/api/client";
+import { translate } from "@/lib/i18n/core";
+import { formatDateTime, getSupporterSideLabel, getWatchedTypeLabel } from "@/lib/i18n/domain";
 import type { CheckInDetail, MatchDetail } from "@/types/api";
 
 type MatchCheckInPanelProps = {
@@ -24,6 +27,7 @@ type MatchCheckInPanelProps = {
 export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   const router = useRouter();
   const { status, refresh } = useAuth();
+  const { locale, t } = useLocale();
   const [myCheckIn, setMyCheckIn] = useState<CheckInDetail | null | undefined>(undefined);
   const [loadingRecord, setLoadingRecord] = useState(false);
   const [recordError, setRecordError] = useState<string | null>(null);
@@ -65,7 +69,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
         }
         if (error instanceof ApiError) {
           if (error.code === "NOT_FOUND") {
-            setRecordError("Your backend is missing the latest check-in API. Restart it after applying the newest code.");
+            setRecordError(t("checkin.backendMissing"));
           } else if (error.code === "UNAUTHORIZED") {
             setMyCheckIn(undefined);
             setRecordError(null);
@@ -74,7 +78,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
             setRecordError(error.message);
           }
         } else {
-          setRecordError("Failed to load your match record.");
+          setRecordError(t("checkin.failedLoad"));
         }
       } finally {
         if (!cancelled) {
@@ -87,7 +91,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [match.id, refresh, status]);
+  }, [match.id, refresh, status, t]);
 
   const availablePlayers = useMemo(
     () => roster.map((player) => ({ ...player, label: `${player.name} · ${player.team.name}` })),
@@ -132,7 +136,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const validation = validateFormState(formState, roster);
+    const validation = validateFormState(formState, roster, locale);
     setFormErrors(validation);
     setSubmitError(null);
     if (Object.keys(validation).length > 0) {
@@ -154,7 +158,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
       if (error instanceof ApiError) {
         setSubmitError(error.message);
       } else {
-        setSubmitError("Failed to save your match record.");
+        setSubmitError(t("checkin.failedSave"));
       }
     } finally {
       setSubmitting(false);
@@ -164,8 +168,8 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   if (status === "loading") {
     return (
       <section className="rounded-xl border p-5 lg:col-span-3">
-        <h2 className="text-lg font-semibold">My Match Record</h2>
-        <p className="mt-3 text-sm text-neutral-600">Checking your session and match record...</p>
+        <h2 className="text-lg font-semibold">{t("checkin.title")}</h2>
+        <p className="mt-3 text-sm text-neutral-600">{t("checkin.loadingSession")}</p>
       </section>
     );
   }
@@ -173,15 +177,13 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   if (status !== "authenticated") {
     return (
       <section className="rounded-xl border p-5 lg:col-span-3">
-        <h2 className="text-lg font-semibold">My Match Record</h2>
-        <p className="mt-3 text-sm text-neutral-600">
-          Sign in to record your reaction, ratings, and tags for this match.
-        </p>
+        <h2 className="text-lg font-semibold">{t("checkin.title")}</h2>
+        <p className="mt-3 text-sm text-neutral-600">{t("checkin.signInPrompt")}</p>
         <Link
           href="/login"
           className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
-          Go to Dev Login
+          {t("profile.goToLogin")}
         </Link>
       </section>
     );
@@ -190,11 +192,8 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   if (!isFinished) {
     return (
       <section className="rounded-xl border p-5 lg:col-span-3">
-        <h2 className="text-lg font-semibold">My Match Record</h2>
-        <p className="mt-3 text-sm text-neutral-600">
-          Check-ins open after the match is finished. You can come back here once the final whistle
-          blows.
-        </p>
+        <h2 className="text-lg font-semibold">{t("checkin.title")}</h2>
+        <p className="mt-3 text-sm text-neutral-600">{t("checkin.notFinished")}</p>
       </section>
     );
   }
@@ -202,10 +201,8 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   if (roster.length === 0 || tagOptions.length === 0) {
     return (
       <section className="rounded-xl border p-5 lg:col-span-3">
-        <h2 className="text-lg font-semibold">My Match Record</h2>
-        <p className="mt-3 text-sm text-neutral-600">
-          This match detail payload is missing check-in form data. Restart the backend and reload the page.
-        </p>
+        <h2 className="text-lg font-semibold">{t("checkin.title")}</h2>
+        <p className="mt-3 text-sm text-neutral-600">{t("checkin.missingFormData")}</p>
       </section>
     );
   }
@@ -214,10 +211,8 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
     <section className="rounded-xl border p-5 lg:col-span-3">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">My Match Record</h2>
-          <p className="mt-2 text-sm text-neutral-600">
-            Save your own ratings, tags, and player notes for this match.
-          </p>
+          <h2 className="text-lg font-semibold">{t("checkin.title")}</h2>
+          <p className="mt-2 text-sm text-neutral-600">{t("checkin.subtitle")}</p>
         </div>
         {!editing && !loadingRecord ? (
           myCheckIn ? (
@@ -226,7 +221,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
               onClick={openEdit}
               className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-50"
             >
-              Edit My Record
+              {t("checkin.edit")}
             </button>
           ) : (
             <button
@@ -234,50 +229,58 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
               onClick={openCreate}
               className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Record This Match
+              {t("checkin.create")}
             </button>
           )
         ) : null}
       </div>
 
-      {loadingRecord ? <p className="mt-4 text-sm text-neutral-600">Loading your record...</p> : null}
+      {loadingRecord ? <p className="mt-4 text-sm text-neutral-600">{t("checkin.loadingRecord")}</p> : null}
       {recordError ? <p className="mt-4 text-sm text-red-600">{recordError}</p> : null}
 
-      {!editing && myCheckIn ? <SavedCheckInSummary checkIn={myCheckIn} /> : null}
+      {!editing && myCheckIn ? <SavedCheckInSummary checkIn={myCheckIn} locale={locale} /> : null}
 
       {!editing && !loadingRecord && !myCheckIn ? (
-        <p className="mt-5 text-sm text-neutral-600">
-          You have not recorded this match yet. Use the button above to create your first entry.
-        </p>
+        <p className="mt-5 text-sm text-neutral-600">{t("checkin.empty")}</p>
       ) : null}
 
       {editing ? (
         <form onSubmit={handleSubmit} className="mt-6 space-y-6 rounded-xl border border-neutral-200 p-5">
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm">
-              <span className="mb-2 block font-medium">Watched Type</span>
+              <span className="mb-2 block font-medium">{t("checkin.watchedType")}</span>
               <select
                 value={formState.watchedType}
-                onChange={(event) => setFormState((current) => ({ ...current, watchedType: event.target.value as CheckInFormState["watchedType"] }))}
+                onChange={(event) =>
+                  setFormState((current) => ({
+                    ...current,
+                    watchedType: event.target.value as CheckInFormState["watchedType"],
+                  }))
+                }
                 className="w-full rounded-md border px-3 py-2"
               >
-                <option value="FULL">Full Match</option>
-                <option value="PARTIAL">Partial</option>
-                <option value="HIGHLIGHTS">Highlights</option>
+                <option value="FULL">{t("enum.watchedType.full")}</option>
+                <option value="PARTIAL">{t("enum.watchedType.partial")}</option>
+                <option value="HIGHLIGHTS">{t("enum.watchedType.highlights")}</option>
               </select>
               {formErrors.watchedType ? <span className="mt-1 block text-red-600">{formErrors.watchedType}</span> : null}
             </label>
 
             <label className="block text-sm">
-              <span className="mb-2 block font-medium">Supporter Side</span>
+              <span className="mb-2 block font-medium">{t("checkin.supporterSide")}</span>
               <select
                 value={formState.supporterSide}
-                onChange={(event) => setFormState((current) => ({ ...current, supporterSide: event.target.value as CheckInFormState["supporterSide"] }))}
+                onChange={(event) =>
+                  setFormState((current) => ({
+                    ...current,
+                    supporterSide: event.target.value as CheckInFormState["supporterSide"],
+                  }))
+                }
                 className="w-full rounded-md border px-3 py-2"
               >
                 <option value="HOME">{match.homeTeam.name}</option>
                 <option value="AWAY">{match.awayTeam.name}</option>
-                <option value="NEUTRAL">Neutral</option>
+                <option value="NEUTRAL">{t("enum.supporterSide.neutral")}</option>
               </select>
               {formErrors.supporterSide ? <span className="mt-1 block text-red-600">{formErrors.supporterSide}</span> : null}
             </label>
@@ -285,19 +288,19 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
 
           <div className="grid gap-4 md:grid-cols-3">
             <RatingField
-              label="Match Rating"
+              label={t("checkin.matchRating")}
               value={formState.matchRating}
               error={formErrors.matchRating}
               onChange={(value) => setFormState((current) => ({ ...current, matchRating: value }))}
             />
             <RatingField
-              label={`${match.homeTeam.name} Rating`}
+              label={`${match.homeTeam.name} ${t("checkin.rating")}`}
               value={formState.homeTeamRating}
               error={formErrors.homeTeamRating}
               onChange={(value) => setFormState((current) => ({ ...current, homeTeamRating: value }))}
             />
             <RatingField
-              label={`${match.awayTeam.name} Rating`}
+              label={`${match.awayTeam.name} ${t("checkin.rating")}`}
               value={formState.awayTeamRating}
               error={formErrors.awayTeamRating}
               onChange={(value) => setFormState((current) => ({ ...current, awayTeamRating: value }))}
@@ -305,7 +308,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
           </div>
 
           <label className="block text-sm">
-            <span className="mb-2 block font-medium">Watched At</span>
+            <span className="mb-2 block font-medium">{t("checkin.watchedAt")}</span>
             <input
               type="datetime-local"
               value={formState.watchedAt}
@@ -316,21 +319,21 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
           </label>
 
           <label className="block text-sm">
-            <span className="mb-2 block font-medium">Short Review</span>
+            <span className="mb-2 block font-medium">{t("checkin.shortReview")}</span>
             <textarea
               value={formState.shortReview}
               onChange={(event) => setFormState((current) => ({ ...current, shortReview: event.target.value }))}
               rows={4}
               maxLength={280}
               className="w-full rounded-md border px-3 py-2"
-              placeholder="What stood out after the final whistle?"
+              placeholder={t("checkin.shortReviewPlaceholder")}
             />
             <span className="mt-1 block text-xs text-neutral-500">{formState.shortReview.length}/280</span>
             {formErrors.shortReview ? <span className="mt-1 block text-red-600">{formErrors.shortReview}</span> : null}
           </label>
 
           <fieldset className="space-y-3">
-            <legend className="text-sm font-medium">Tags</legend>
+            <legend className="text-sm font-medium">{t("checkin.tags")}</legend>
             <div className="flex flex-wrap gap-2">
               {tagOptions.map((tag) => {
                 const selected = formState.tags.includes(tag.id);
@@ -355,7 +358,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-4">
-              <h3 className="text-sm font-medium">Player Ratings</h3>
+              <h3 className="text-sm font-medium">{t("checkin.playerRatings")}</h3>
               <button
                 type="button"
                 onClick={() =>
@@ -366,13 +369,15 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                 }
                 className="text-sm font-medium text-primary underline-offset-4 hover:underline"
               >
-                Add Player Rating
+                {t("checkin.addPlayerRating")}
               </button>
             </div>
 
             {formState.playerRatings.length === 0 ? (
               <p className="text-sm text-neutral-600">
-                Rate as many players from this match roster as you want.
+                {locale === "zh"
+                  ? "你可以为本场名单中的任意球员评分。"
+                  : "Rate as many players from this match roster as you want."}
               </p>
             ) : (
               <div className="space-y-4">
@@ -380,7 +385,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                   <div key={`${index}-${playerRating.playerId}`} className="rounded-lg border border-neutral-200 p-4">
                     <div className="grid gap-4 md:grid-cols-[1.4fr_0.5fr]">
                       <label className="block text-sm">
-                        <span className="mb-2 block font-medium">Player</span>
+                        <span className="mb-2 block font-medium">{t("checkin.player")}</span>
                         <select
                           value={playerRating.playerId}
                           onChange={(event) =>
@@ -393,7 +398,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                           }
                           className="w-full rounded-md border px-3 py-2"
                         >
-                          <option value="">Select a player</option>
+                          <option value="">{locale === "zh" ? "选择球员" : "Select a player"}</option>
                           {availablePlayers
                             .filter((player) => {
                               const selectedElsewhere = formState.playerRatings.some(
@@ -403,15 +408,15 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                               return !selectedElsewhere || player.id === Number(playerRating.playerId);
                             })
                             .map((player) => (
-                            <option key={player.id} value={String(player.id)}>
-                              {player.label}
-                            </option>
+                              <option key={player.id} value={String(player.id)}>
+                                {player.label}
+                              </option>
                             ))}
                         </select>
                       </label>
 
                       <RatingField
-                        label="Rating"
+                        label={t("checkin.rating")}
                         value={playerRating.rating}
                         onChange={(value) =>
                           setFormState((current) => ({
@@ -425,7 +430,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                     </div>
 
                     <label className="mt-4 block text-sm">
-                      <span className="mb-2 block font-medium">Note</span>
+                      <span className="mb-2 block font-medium">{t("checkin.note")}</span>
                       <input
                         type="text"
                         value={playerRating.note}
@@ -439,7 +444,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                           }))
                         }
                         className="w-full rounded-md border px-3 py-2"
-                        placeholder="Optional player note"
+                        placeholder={t("checkin.notePlaceholder")}
                       />
                     </label>
 
@@ -453,7 +458,7 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
                       }
                       className="mt-4 text-sm text-red-600 underline-offset-4 hover:underline"
                     >
-                      Remove Player Rating
+                      {t("checkin.remove")}
                     </button>
                   </div>
                 ))}
@@ -470,14 +475,14 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
               disabled={submitting}
               className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
-              {submitting ? "Saving..." : myCheckIn ? "Update Record" : "Create Record"}
+              {submitting ? t("checkin.saving") : t("checkin.save")}
             </button>
             <button
               type="button"
               onClick={cancelEdit}
               className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-50"
             >
-              Cancel
+              {t("checkin.cancel")}
             </button>
           </div>
         </form>
@@ -486,27 +491,29 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
   );
 }
 
-function SavedCheckInSummary({ checkIn }: { checkIn: CheckInDetail }) {
+function SavedCheckInSummary({ checkIn, locale }: { checkIn: CheckInDetail; locale: "en" | "zh" }) {
   return (
     <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_1.2fr]">
       <div className="rounded-lg border border-neutral-200 p-4">
-        <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">Saved Record</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">
+          {translate(locale, "checkin.savedTitle")}
+        </p>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between gap-4">
-            <dt>Watched Type</dt>
-            <dd>{checkIn.watchedType}</dd>
+            <dt>{translate(locale, "checkin.watchedType")}</dt>
+            <dd>{getWatchedTypeLabel(checkIn.watchedType, locale)}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt>Supporter Side</dt>
-            <dd>{checkIn.supporterSide}</dd>
+            <dt>{translate(locale, "checkin.supporterSide")}</dt>
+            <dd>{getSupporterSideLabel(checkIn.supporterSide, locale)}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt>Match Rating</dt>
+            <dt>{translate(locale, "checkin.matchRating")}</dt>
             <dd>{checkIn.matchRating}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt>Saved At</dt>
-            <dd>{new Date(checkIn.updatedAt).toLocaleString()}</dd>
+            <dt>{translate(locale, "checkin.savedAtLabel")}</dt>
+            <dd>{formatDateTime(checkIn.updatedAt, locale)}</dd>
           </div>
         </dl>
         {checkIn.tags.length > 0 ? (
@@ -521,9 +528,11 @@ function SavedCheckInSummary({ checkIn }: { checkIn: CheckInDetail }) {
       </div>
 
       <div className="rounded-lg border border-neutral-200 p-4">
-        <h3 className="text-sm font-medium">Player Notes</h3>
+        <h3 className="text-sm font-medium">{translate(locale, "checkin.playerNotes")}</h3>
         {checkIn.playerRatings.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-600">No player ratings saved yet.</p>
+          <p className="mt-3 text-sm text-neutral-600">
+            {translate(locale, "checkin.noSavedPlayerRatings")}
+          </p>
         ) : (
           <div className="mt-3 space-y-3">
             {checkIn.playerRatings.map((rating) => (
@@ -533,7 +542,9 @@ function SavedCheckInSummary({ checkIn }: { checkIn: CheckInDetail }) {
                     <p className="font-medium">{rating.player.name}</p>
                     <p className="text-sm text-neutral-500">{rating.player.team.name}</p>
                   </div>
-                  <p className="text-sm">Rating {rating.rating}</p>
+                  <p className="text-sm">
+                    {translate(locale, "checkin.ratingValue", { value: rating.rating })}
+                  </p>
                 </div>
                 {rating.note ? <p className="mt-2 text-sm text-neutral-700">{rating.note}</p> : null}
               </div>

@@ -3,6 +3,8 @@ package model
 type Tag struct {
 	ID        uint   `gorm:"primaryKey"`
 	Name      string `gorm:"size:50;not null"`
+	NameEn    string `gorm:"column:name_en;size:50;not null"`
+	NameZh    string `gorm:"column:name_zh;size:50;not null"`
 	Slug      string `gorm:"size:50;not null;uniqueIndex"`
 	SortOrder int    `gorm:"not null;default:0;index"`
 	IsActive  bool   `gorm:"not null;default:true;index"`

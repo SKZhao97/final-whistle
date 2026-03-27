@@ -1,4 +1,5 @@
 import type { UserCheckInHistoryResponse, UserProfileSummary } from "@/types/api";
+import { LOCALE_COOKIE_NAME, type Locale } from "@/lib/i18n/config";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -21,6 +22,22 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
   }
+}
+
+function getClientLocale(): Locale | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const match = document.cookie
+    .split("; ")
+    .find((item) => item.startsWith(`${LOCALE_COOKIE_NAME}=`));
+  if (!match) {
+    return null;
+  }
+
+  const value = match.split("=")[1];
+  return value === "zh" ? "zh" : "en";
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
@@ -60,10 +77,14 @@ export async function apiRequest<T = unknown>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
+  const headers = new Headers(options.headers);
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+  const clientLocale = getClientLocale();
+  if (clientLocale && !headers.has("X-Final-Whistle-Locale")) {
+    headers.set("X-Final-Whistle-Locale", clientLocale);
+  }
 
   const config: RequestInit = {
     ...options,
@@ -73,6 +94,16 @@ export async function apiRequest<T = unknown>(
 
   const response = await fetch(url, config);
   return handleResponse<T>(response);
+}
+
+export function withLocaleHeaders(locale: Locale, options: RequestInit = {}): RequestInit {
+  const headers = new Headers(options.headers);
+  headers.set("X-Final-Whistle-Locale", locale);
+
+  return {
+    ...options,
+    headers,
+  };
 }
 
 // Convenience methods

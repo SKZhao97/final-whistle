@@ -32,7 +32,7 @@ func (h *CheckInHandler) GetMyCheckIn(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.GetMyCheckIn(uint(matchID), user.ID)
+	result, err := h.service.GetMyCheckIn(uint(matchID), user.ID, middleware.CurrentLocale(c))
 	if err != nil {
 		h.writeError(c, err)
 		return
@@ -49,7 +49,7 @@ func (h *CheckInHandler) Update(c *gin.Context) {
 	h.upsert(c, http.StatusOK, h.service.UpdateCheckIn)
 }
 
-func (h *CheckInHandler) upsert(c *gin.Context, successStatus int, fn func(matchID, userID uint, req dto.UpsertCheckInRequestDTO) (*dto.CheckInDetailDTO, error)) {
+func (h *CheckInHandler) upsert(c *gin.Context, successStatus int, fn func(matchID, userID uint, req dto.UpsertCheckInRequestDTO, locale string) (*dto.CheckInDetailDTO, error)) {
 	user, ok := middleware.CurrentUser(c)
 	if !ok {
 		utils.UnauthorizedResponse(c, "Authentication required")
@@ -68,7 +68,7 @@ func (h *CheckInHandler) upsert(c *gin.Context, successStatus int, fn func(match
 		return
 	}
 
-	result, err := fn(uint(matchID), user.ID, req)
+	result, err := fn(uint(matchID), user.ID, req, middleware.CurrentLocale(c))
 	if err != nil {
 		h.writeError(c, err)
 		return

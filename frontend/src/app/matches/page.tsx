@@ -1,29 +1,33 @@
 import Link from "next/link";
 
-import { matchesApi } from "@/lib/api/client";
+import { matchesApi, withLocaleHeaders } from "@/lib/api/client";
+import { formatDateTime, formatNumber } from "@/lib/i18n/domain";
+import { getServerLocale } from "@/lib/i18n/server";
+import { translate } from "@/lib/i18n/core";
 import type { MatchListResponse } from "@/types/api";
 
 export default async function MatchesPage() {
+  const locale = await getServerLocale();
   const data = await matchesApi.list<MatchListResponse>(
     { page: 1, pageSize: 20 },
-    { cache: "no-store" },
+    withLocaleHeaders(locale, { cache: "no-store" }),
   );
 
   return (
     <div className="py-8">
       <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Matches</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{translate(locale, "matches.title")}</h1>
           <p className="mt-2 text-sm text-neutral-600">
-            Browse seeded football matches and open the public detail view.
+            {translate(locale, "matches.subtitle")}
           </p>
         </div>
-        <p className="text-sm text-neutral-500">{data.total} total matches</p>
+        <p className="text-sm text-neutral-500">{translate(locale, "matches.total", { total: data.total })}</p>
       </div>
 
       {data.items.length === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-sm text-neutral-600">
-          No matches are available yet.
+          {translate(locale, "matches.empty")}
         </div>
       ) : (
         <div className="grid gap-4">
@@ -43,12 +47,12 @@ export default async function MatchesPage() {
                     {typeof match.awayScore === "number" ? match.awayScore : "-"} {match.awayTeam.name}
                   </h2>
                   <p className="mt-1 text-sm text-neutral-600">
-                    {match.round ?? "Round TBD"} · {new Date(match.kickoffAt).toLocaleString()}
+                    {match.round ?? translate(locale, "matches.roundTbd")} · {formatDateTime(match.kickoffAt, locale)}
                   </p>
                 </div>
                 <div className="text-sm text-neutral-600">
-                  <p>Check-ins: {match.aggregates.checkInCount}</p>
-                  <p>Avg rating: {match.aggregates.matchRatingAvg ?? "No samples"}</p>
+                  <p>{translate(locale, "matches.checkIns", { count: match.aggregates.checkInCount })}</p>
+                  <p>{translate(locale, "matches.avgRating", { value: formatNumber(match.aggregates.matchRatingAvg, locale) })}</p>
                 </div>
               </div>
             </Link>

@@ -49,6 +49,7 @@ func main() {
 	router.Use(middleware.RequestLogger())
 	router.Use(middleware.ErrorRecovery())
 	router.Use(middleware.CORS())
+	router.Use(middleware.ResolveLocale())
 
 	// Set up routes
 	setupRoutes(router, database, cfg.Server.Env)

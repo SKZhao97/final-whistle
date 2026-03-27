@@ -14,9 +14,9 @@ import (
 // UserService 定义了用户相关的业务操作接口。
 type UserService interface {
 	// GetProfileSummary 获取用户资料摘要。
-	GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO, error)
+	GetProfileSummary(userID uint, locale string) (*dto.UserProfileSummaryDTO, error)
 	// GetCheckInHistory 获取用户签到历史。
-	GetCheckInHistory(userID uint, page, pageSize int) (*dto.UserCheckInHistoryResponseDTO, error)
+	GetCheckInHistory(userID uint, page, pageSize int, locale string) (*dto.UserCheckInHistoryResponseDTO, error)
 }
 
 // userService 是 UserService 接口的实现。
@@ -36,10 +36,11 @@ func NewUserService(repo repository.UserRepository) UserService {
 // GetProfileSummary 获取用户资料摘要，包括签到统计、平均评分、最爱球队等信息。
 // 参数:
 //   - userID: 用户ID
+//
 // 返回:
 //   - UserProfileSummaryDTO: 用户资料摘要
 //   - error: 错误信息，如用户不存在或数据库错误
-func (s *userService) GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO, error) {
+func (s *userService) GetProfileSummary(userID uint, locale string) (*dto.UserProfileSummaryDTO, error) {
 	// 获取用户资料摘要记录，recentSince为30天前的时间点
 	record, err := s.repo.GetUserProfileSummary(userID, s.now().AddDate(0, 0, -30))
 	if err != nil {
@@ -72,11 +73,8 @@ func (s *userService) GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO
 		}
 	}
 	if record.MostUsedTag != nil {
-		result.MostUsedTag = &dto.TagDTO{
-			ID:   record.MostUsedTag.ID,
-			Name: record.MostUsedTag.Name,
-			Slug: record.MostUsedTag.Slug,
-		}
+		tagDTO := toTagDTO(*record.MostUsedTag, locale)
+		result.MostUsedTag = &tagDTO
 	}
 
 	return result, nil
@@ -87,10 +85,11 @@ func (s *userService) GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO
 //   - userID: 用户ID
 //   - page: 页码，小于1时默认1
 //   - pageSize: 每页大小，小于1时默认20，大于50时限制为50
+//
 // 返回:
 //   - UserCheckInHistoryResponseDTO: 分页签到历史响应
 //   - error: 错误信息，如数据库错误
-func (s *userService) GetCheckInHistory(userID uint, page, pageSize int) (*dto.UserCheckInHistoryResponseDTO, error) {
+func (s *userService) GetCheckInHistory(userID uint, page, pageSize int, locale string) (*dto.UserCheckInHistoryResponseDTO, error) {
 	// 验证和规范化分页参数
 	if page < 1 {
 		page = 1
@@ -114,11 +113,7 @@ func (s *userService) GetCheckInHistory(userID uint, page, pageSize int) (*dto.U
 	for _, checkIn := range checkIns {
 		tags := make([]dto.TagDTO, 0, len(checkIn.Tags))
 		for _, tag := range checkIn.Tags {
-			tags = append(tags, dto.TagDTO{
-				ID:   tag.ID,
-				Name: tag.Name,
-				Slug: tag.Slug,
-			})
+			tags = append(tags, toTagDTO(tag, locale))
 		}
 
 		items = append(items, dto.UserCheckInHistoryItemDTO{

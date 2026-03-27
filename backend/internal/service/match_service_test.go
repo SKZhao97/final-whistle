@@ -74,7 +74,7 @@ func TestMatchServiceListMatchesEmpty(t *testing.T) {
 
 func TestMatchServiceGetMatchDetailNotFound(t *testing.T) {
 	svc := NewMatchService(&fakeMatchRepository{matchDetailErr: gorm.ErrRecordNotFound})
-	_, err := svc.GetMatchDetail(1)
+	_, err := svc.GetMatchDetail(1, "en")
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
 	}
@@ -94,7 +94,7 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 		matchDetail: match,
 		aggregates:  map[uint]repository.MatchAggregateRecord{1: {MatchID: 1, CheckInCount: 0}},
 		activeTags: []model.Tag{
-			{ID: 1, Name: "热血", Slug: "hot-blooded"},
+			{ID: 1, Name: "Intense", NameEn: "Intense", NameZh: "热血", Slug: "hot-blooded"},
 		},
 		matchRoster: []repository.MatchRosterPlayerRecord{
 			{
@@ -108,7 +108,7 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 		},
 	})
 
-	result, err := svc.GetMatchDetail(1)
+	result, err := svc.GetMatchDetail(1, "zh")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -120,5 +120,8 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 	}
 	if len(result.AvailableTags) != 1 || result.AvailableTags[0].ID != 1 {
 		t.Fatalf("expected available tags in detail response, got %#v", result.AvailableTags)
+	}
+	if result.AvailableTags[0].Name != "热血" {
+		t.Fatalf("expected zh tag label, got %#v", result.AvailableTags[0])
 	}
 }
