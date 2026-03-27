@@ -15,7 +15,7 @@ type fakePlayerService struct {
 	err    error
 }
 
-func (f *fakePlayerService) GetPlayerDetail(id uint) (*dto.PlayerDetailDTO, error) {
+func (f *fakePlayerService) GetPlayerDetail(id uint, locale string) (*dto.PlayerDetailDTO, error) {
 	return f.result, f.err
 }
 

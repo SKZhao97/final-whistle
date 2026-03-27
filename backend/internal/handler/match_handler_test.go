@@ -18,7 +18,7 @@ type fakeMatchService struct {
 	detailErr    error
 }
 
-func (f *fakeMatchService) ListMatches(params repository.MatchListParams) (dto.MatchListResponseDTO, error) {
+func (f *fakeMatchService) ListMatches(params repository.MatchListParams, locale string) (dto.MatchListResponseDTO, error) {
 	return f.listResult, f.listErr
 }
 func (f *fakeMatchService) GetMatchDetail(id uint, locale string) (*dto.MatchDetailDTO, error) {

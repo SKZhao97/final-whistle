@@ -15,7 +15,9 @@ type fakeTeamService struct {
 	err    error
 }
 
-func (f *fakeTeamService) GetTeamDetail(id uint) (*dto.TeamDetailDTO, error) { return f.result, f.err }
+func (f *fakeTeamService) GetTeamDetail(id uint, locale string) (*dto.TeamDetailDTO, error) {
+	return f.result, f.err
+}
 
 func TestTeamHandlerDetailSuccess(t *testing.T) {
 	gin.SetMode(gin.TestMode)

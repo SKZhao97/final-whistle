@@ -318,7 +318,7 @@ func mapCheckInDetail(checkIn *model.CheckIn, locale string) *dto.CheckInDetailD
 				Slug:      rating.Player.Slug,
 				Position:  rating.Player.Position,
 				AvatarURL: rating.Player.AvatarURL,
-				Team:      toTeamSummaryDTO(rating.Player.Team),
+				Team:      toTeamSummaryDTO(rating.Player.Team, locale),
 			},
 			Rating: rating.Rating,
 			Note:   rating.Note,

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"final-whistle/backend/internal/middleware"
 	"final-whistle/backend/internal/service"
 	"final-whistle/backend/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -20,7 +21,7 @@ func (h *TeamHandler) Detail(c *gin.Context) {
 		utils.ValidationErrorResponse(c, "invalid team id", nil)
 		return
 	}
-	result, err := h.service.GetTeamDetail(uint(id))
+	result, err := h.service.GetTeamDetail(uint(id), middleware.CurrentLocale(c))
 	if err != nil {
 		if err == service.ErrNotFound {
 			utils.NotFoundResponse(c, "Team not found")

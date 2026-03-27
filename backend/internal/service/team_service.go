@@ -9,7 +9,7 @@ import (
 )
 
 type TeamService interface {
-	GetTeamDetail(id uint) (*dto.TeamDetailDTO, error)
+	GetTeamDetail(id uint, locale string) (*dto.TeamDetailDTO, error)
 }
 
 type teamService struct {
@@ -21,7 +21,7 @@ func NewTeamService(repo repository.TeamRepository, matchRepo repository.MatchRe
 	return &teamService{repo: repo, matchRepo: matchRepo}
 }
 
-func (s *teamService) GetTeamDetail(id uint) (*dto.TeamDetailDTO, error) {
+func (s *teamService) GetTeamDetail(id uint, locale string) (*dto.TeamDetailDTO, error) {
 	team, err := s.repo.FindByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -51,13 +51,13 @@ func (s *teamService) GetTeamDetail(id uint) (*dto.TeamDetailDTO, error) {
 	for _, match := range recentMatches {
 		items = append(items, dto.MatchListItemDTO{
 			ID:          match.ID,
-			Competition: match.Competition,
+			Competition: localizedCompetitionName(match.Competition, locale),
 			Season:      match.Season,
-			Round:       match.Round,
+			Round:       localizedRound(match.Round, locale),
 			Status:      string(match.Status),
 			KickoffAt:   match.KickoffAt,
-			HomeTeam:    toTeamSummaryDTO(match.HomeTeam),
-			AwayTeam:    toTeamSummaryDTO(match.AwayTeam),
+			HomeTeam:    toTeamSummaryDTO(match.HomeTeam, locale),
+			AwayTeam:    toTeamSummaryDTO(match.AwayTeam, locale),
 			HomeScore:   match.HomeScore,
 			AwayScore:   match.AwayScore,
 			Aggregates:  toAggregateDTO(aggregates[match.ID]),
@@ -66,7 +66,7 @@ func (s *teamService) GetTeamDetail(id uint) (*dto.TeamDetailDTO, error) {
 
 	return &dto.TeamDetailDTO{
 		ID:            team.ID,
-		Name:          team.Name,
+		Name:          localizedTeamName(*team, locale),
 		ShortName:     team.ShortName,
 		Slug:          team.Slug,
 		LogoURL:       team.LogoURL,

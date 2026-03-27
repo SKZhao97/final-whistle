@@ -28,26 +28,30 @@ func (f *fakePlayerRepository) GetRatingSummary(playerID uint) (repository.Playe
 
 func TestPlayerServiceNotFound(t *testing.T) {
 	svc := NewPlayerService(&fakePlayerRepository{findErr: gorm.ErrRecordNotFound})
-	_, err := svc.GetPlayerDetail(1)
+	_, err := svc.GetPlayerDetail(1, "en")
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
 	}
 }
 
 func TestPlayerServiceSuccess(t *testing.T) {
+	teamZh := "球队"
 	svc := NewPlayerService(&fakePlayerRepository{
 		player: &model.Player{
 			ID:   1,
 			Name: "Player",
 			Slug: "player",
-			Team: model.Team{ID: 2, Name: "Team", Slug: "team"},
+			Team: model.Team{ID: 2, Name: "Team", NameZh: &teamZh, Slug: "team"},
 		},
 	})
-	result, err := svc.GetPlayerDetail(1)
+	result, err := svc.GetPlayerDetail(1, "zh")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 	if result.ID != 1 || result.Team.ID != 2 {
 		t.Fatalf("unexpected result: %#v", result)
+	}
+	if result.Team.Name != "球队" {
+		t.Fatalf("expected localized team name, got %#v", result.Team.Name)
 	}
 }

@@ -64,13 +64,8 @@ func (s *userService) GetProfileSummary(userID uint, locale string) (*dto.UserPr
 	}
 
 	if record.FavoriteTeam != nil {
-		result.FavoriteTeam = &dto.TeamSummaryDTO{
-			ID:        record.FavoriteTeam.ID,
-			Name:      record.FavoriteTeam.Name,
-			ShortName: record.FavoriteTeam.ShortName,
-			Slug:      record.FavoriteTeam.Slug,
-			LogoURL:   record.FavoriteTeam.LogoURL,
-		}
+		teamDTO := toTeamSummaryDTO(*record.FavoriteTeam, locale)
+		result.FavoriteTeam = &teamDTO
 	}
 	if record.MostUsedTag != nil {
 		tagDTO := toTagDTO(*record.MostUsedTag, locale)
@@ -131,13 +126,13 @@ func (s *userService) GetCheckInHistory(userID uint, page, pageSize int, locale 
 			Tags:           tags,
 			Match: dto.MatchListItemDTO{
 				ID:          checkIn.Match.ID,
-				Competition: checkIn.Match.Competition,
+				Competition: localizedCompetitionName(checkIn.Match.Competition, locale),
 				Season:      checkIn.Match.Season,
-				Round:       checkIn.Match.Round,
+				Round:       localizedRound(checkIn.Match.Round, locale),
 				Status:      string(checkIn.Match.Status),
 				KickoffAt:   checkIn.Match.KickoffAt,
-				HomeTeam:    toTeamSummaryDTO(checkIn.Match.HomeTeam),
-				AwayTeam:    toTeamSummaryDTO(checkIn.Match.AwayTeam),
+				HomeTeam:    toTeamSummaryDTO(checkIn.Match.HomeTeam, locale),
+				AwayTeam:    toTeamSummaryDTO(checkIn.Match.AwayTeam, locale),
 				HomeScore:   checkIn.Match.HomeScore,
 				AwayScore:   checkIn.Match.AwayScore,
 				Aggregates:  dto.MatchAggregateSummaryDTO{},

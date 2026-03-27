@@ -34,7 +34,7 @@ func (h *MatchHandler) List(c *gin.Context) {
 		Season:      c.Query("season"),
 		Page:        page,
 		PageSize:    pageSize,
-	})
+	}, middleware.CurrentLocale(c))
 	if err != nil {
 		utils.InternalErrorResponse(c, "Failed to load matches", nil)
 		return

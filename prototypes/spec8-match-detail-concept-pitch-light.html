@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final Whistle - Match Detail Concept (Light Pitch)</title>
+    <style>
+      :root {
+        --paper: #f8f7f1;
+        --paper-soft: #f1efe6;
+        --ink: #1f261f;
+        --ink-soft: #607061;
+        --line: #d8ddd5;
+        --field: #5b8166;
+        --field-deep: #446552;
+        --field-soft: #e7efe9;
+        --field-mist: rgba(91, 129, 102, 0.08);
+        --accent: #9f7440;
+        --accent-soft: #f1e6d6;
+        --white: #fcfdf9;
+        --shadow: 0 18px 44px rgba(37, 53, 38, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        background:
+          radial-gradient(circle at top left, rgba(91, 129, 102, 0.12), transparent 24%),
+          radial-gradient(circle at top right, rgba(159, 116, 64, 0.08), transparent 22%),
+          linear-gradient(180deg, #fbfaf6 0%, #f2f0e7 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .shell {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 24px 70px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .brand {
+        font-size: 1.05rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .lang {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid rgba(31, 38, 31, 0.1);
+        border-radius: 999px;
+        padding: 4px;
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      .lang span {
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+      }
+
+      .lang .active {
+        background: var(--field-deep);
+        color: #fff;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        padding: 34px;
+        border: 1px solid rgba(91, 129, 102, 0.18);
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(231, 239, 233, 0.95)),
+          linear-gradient(180deg, #f8faf7 0%, #eef4ef 100%);
+        box-shadow: var(--shadow);
+      }
+
+      .hero::before,
+      .hero::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        border: 1px solid rgba(91, 129, 102, 0.18);
+      }
+
+      .hero::before {
+        width: 280px;
+        height: 280px;
+        top: -90px;
+        right: -80px;
+        border-radius: 50%;
+      }
+
+      .hero::after {
+        width: 440px;
+        height: 220px;
+        left: -120px;
+        bottom: -100px;
+        border-radius: 220px 220px 0 0;
+      }
+
+      .eyebrow {
+        font-size: 0.78rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      .league-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .league-mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(91, 129, 102, 0.16);
+        color: var(--field-deep);
+        font-size: 0.86rem;
+      }
+
+      .league-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--field);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.75rem;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.25fr auto 1.25fr;
+        gap: 18px;
+        align-items: end;
+        margin-top: 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .team {
+        display: grid;
+        gap: 8px;
+      }
+
+      .team-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .team-top.right {
+        justify-content: flex-end;
+      }
+
+      .crest {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(180deg, #ffffff, #edf3ee);
+        border: 1px solid rgba(91, 129, 102, 0.2);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: var(--field-deep);
+      }
+
+      .team small {
+        color: var(--ink-soft);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+      }
+
+      .team h2 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3.6rem);
+        line-height: 0.95;
+      }
+
+      .score {
+        font-size: clamp(3.1rem, 8vw, 5.8rem);
+        line-height: 0.84;
+        font-weight: 700;
+        color: var(--field-deep);
+      }
+
+      .hero-meta {
+        position: relative;
+        z-index: 1;
+        margin-top: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .hero-pill {
+        border: 1px solid rgba(91, 129, 102, 0.16);
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
+        gap: 24px;
+        margin-top: 28px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: rgba(252, 253, 249, 0.9);
+        box-shadow: var(--shadow);
+      }
+
+      .record {
+        overflow: hidden;
+      }
+
+      .record-header {
+        padding: 24px 24px 16px;
+        border-bottom: 1px solid rgba(216, 221, 213, 0.84);
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .record-header h3,
+      .pulse h3,
+      .board h3 {
+        margin: 0;
+        font-size: 1.55rem;
+      }
+
+      .record-header p,
+      .pulse p,
+      .board p {
+        margin: 10px 0 0;
+        color: var(--ink-soft);
+        line-height: 1.5;
+      }
+
+      .archive-stamp {
+        border: 1px solid rgba(91, 129, 102, 0.16);
+        color: var(--field-deep);
+        background: var(--field-soft);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .record-body {
+        padding: 24px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .summary-cell {
+        padding: 16px;
+        border-radius: 18px;
+        background:
+          linear-gradient(180deg, rgba(231, 239, 233, 0.5), rgba(255, 255, 255, 0.86));
+        border: 1px solid rgba(91, 129, 102, 0.1);
+      }
+
+      .summary-cell strong {
+        display: block;
+        font-size: 1.55rem;
+        margin-top: 8px;
+        color: var(--field-deep);
+      }
+
+      .summary-cell span {
+        color: var(--ink-soft);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .record-note {
+        padding: 22px 22px 24px;
+        border-radius: 22px;
+        border: 1px solid rgba(91, 129, 102, 0.1);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(231, 239, 233, 0.4));
+      }
+
+      .record-note .label,
+      .section-label {
+        font-size: 0.76rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--field-deep);
+      }
+
+      .record-note p {
+        margin: 12px 0 0;
+        font-size: 1.02rem;
+        line-height: 1.72;
+      }
+
+      .tag-row,
+      .player-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tag {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid rgba(91, 129, 102, 0.16);
+        color: var(--field-deep);
+        font-size: 0.84rem;
+      }
+
+      .player {
+        flex: 1 1 220px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(216, 221, 213, 0.9);
+        background: var(--white);
+      }
+
+      .player strong {
+        display: block;
+        font-size: 1rem;
+      }
+
+      .player small {
+        color: var(--ink-soft);
+      }
+
+      .player .rating {
+        margin-top: 10px;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .cta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding-top: 6px;
+      }
+
+      .cta-row p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 12px 18px;
+        border: 1px solid transparent;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .button.primary {
+        background: var(--field-deep);
+        color: #fff;
+      }
+
+      .button.secondary {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--line);
+      }
+
+      .side {
+        display: grid;
+        gap: 24px;
+      }
+
+      .pulse,
+      .board {
+        padding: 24px;
+      }
+
+      .stat-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .stat {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(216, 221, 213, 0.84);
+      }
+
+      .stat:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .stat span {
+        color: var(--ink-soft);
+      }
+
+      .review {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(216, 221, 213, 0.84);
+      }
+
+      .review strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .review p {
+        margin: 0;
+      }
+
+      .board-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(216, 221, 213, 0.84);
+      }
+
+      .board-item:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .board-item strong {
+        display: block;
+      }
+
+      .board-item small {
+        color: var(--ink-soft);
+      }
+
+      .board-score {
+        color: var(--field-deep);
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      @media (max-width: 940px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .shell {
+          padding: 18px 16px 40px;
+        }
+
+        .hero,
+        .record-body,
+        .pulse,
+        .board,
+        .record-header {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+
+        .hero-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .score {
+          order: -1;
+        }
+
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .cta-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">Final Whistle</div>
+        <div class="lang">
+          <span class="active">EN</span>
+          <span>中</span>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="league-row">
+          <div class="eyebrow">Premier League · Matchday 1 · Final</div>
+          <div class="league-mark">
+            <div class="league-icon">PL</div>
+            <span>Premier League</span>
+          </div>
+        </div>
+
+        <div class="hero-grid">
+          <div class="team">
+            <div class="team-top">
+              <div class="crest">MCI</div>
+              <div>
+                <small>Home</small>
+                <h2>Manchester<br />City</h2>
+              </div>
+            </div>
+          </div>
+
+          <div class="score">2:2</div>
+
+          <div class="team">
+            <div class="team-top right">
+              <div style="text-align: right">
+                <small>Away</small>
+                <h2>Liverpool</h2>
+              </div>
+              <div class="crest">LIV</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-meta">
+          <div class="hero-pill">Etihad Stadium</div>
+          <div class="hero-pill">Aug 10, 2024 · 11:00 PM</div>
+          <div class="hero-pill">A final worth leaving in the archive</div>
+        </div>
+      </section>
+
+      <div class="layout">
+        <section class="card record">
+          <div class="record-header">
+            <div>
+              <div class="eyebrow">My Match Record</div>
+              <h3>You’ve marked this one down properly.</h3>
+              <p>
+                A lighter pitch palette keeps the football feel, while the warm paper base preserves the archive mood.
+              </p>
+            </div>
+            <div class="archive-stamp">Archived</div>
+          </div>
+
+          <div class="record-body">
+            <div class="summary-grid">
+              <div class="summary-cell">
+                <span>Match Rating</span>
+                <strong>9.0</strong>
+              </div>
+              <div class="summary-cell">
+                <span>Supporter Side</span>
+                <strong>Home</strong>
+              </div>
+              <div class="summary-cell">
+                <span>Home / Away</span>
+                <strong>9 / 8</strong>
+              </div>
+              <div class="summary-cell">
+                <span>Saved At</span>
+                <strong>13:46</strong>
+              </div>
+            </div>
+
+            <div class="record-note">
+              <div class="label">Final Note</div>
+              <p>
+                City controlled the rhythm, but Liverpool kept dragging the match back into chaos.
+                It felt tense from the first minute and deserved to end as a classic.
+              </p>
+            </div>
+
+            <div>
+              <div class="section-label">Tags</div>
+              <div class="tag-row">
+                <span class="tag">Intense</span>
+                <span class="tag">Classic</span>
+                <span class="tag">Comeback</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="section-label">Player Notes</div>
+              <div class="player-row">
+                <div class="player">
+                  <strong>Erling Haaland</strong>
+                  <small>Manchester City</small>
+                  <div class="rating">9/10</div>
+                </div>
+                <div class="player">
+                  <strong>Mohamed Salah</strong>
+                  <small>Liverpool</small>
+                  <div class="rating">8/10 · Sharp movement</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cta-row">
+              <p>This version gives the match more football identity through logos and a softer field palette.</p>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap">
+                <a class="button secondary" href="#">View In My Archive</a>
+                <a class="button primary" href="#">Edit Record</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side">
+          <section class="card pulse">
+            <div class="eyebrow">Community Pulse</div>
+            <h3>What the crowd saw</h3>
+            <p>
+              Community stays secondary, but the football identity is stronger once the league mark and crests are present.
+            </p>
+
+            <div class="stat-list">
+              <div class="stat">
+                <span>Check-ins</span>
+                <strong>38</strong>
+              </div>
+              <div class="stat">
+                <span>Average Match Rating</span>
+                <strong>8.3</strong>
+              </div>
+              <div class="stat">
+                <span>Most Used Tag</span>
+                <strong>Intense</strong>
+              </div>
+            </div>
+
+            <div class="review">
+              <strong>Recent reaction</strong>
+              <p>
+                “Both teams looked like they could win it and lose it in the same five-minute spell.”
+              </p>
+            </div>
+          </section>
+
+          <section class="card board">
+            <div class="eyebrow">Player Board</div>
+            <h3>Standout Ratings</h3>
+            <p>
+              The green is still present, but now it reads as football atmosphere rather than a full-page grass wash.
+            </p>
+
+            <div class="board-item">
+              <div>
+                <strong>Erling Haaland</strong>
+                <small>Manchester City</small>
+              </div>
+              <div class="board-score">8.7</div>
+            </div>
+            <div class="board-item">
+              <div>
+                <strong>Kevin De Bruyne</strong>
+                <small>Manchester City</small>
+              </div>
+              <div class="board-score">8.5</div>
+            </div>
+            <div class="board-item">
+              <div>
+                <strong>Mohamed Salah</strong>
+                <small>Liverpool</small>
+              </div>
+              <div class="board-score">8.0</div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

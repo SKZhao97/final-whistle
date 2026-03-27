@@ -30,6 +30,7 @@ type MatchPlayerRatingRecord struct {
 	AvatarURL     *string
 	TeamID        uint
 	TeamName      string
+	TeamNameZh    *string
 	TeamShortName *string
 	TeamSlug      string
 	TeamLogoURL   *string
@@ -45,6 +46,7 @@ type MatchRosterPlayerRecord struct {
 	AvatarURL     *string
 	TeamID        uint
 	TeamName      string
+	TeamNameZh    *string
 	TeamShortName *string
 	TeamSlug      string
 	TeamLogoURL   *string
@@ -169,6 +171,7 @@ func (r *GormMatchRepository) GetMatchRoster(matchID uint) ([]MatchRosterPlayerR
 			p.avatar_url,
 			t.id AS team_id,
 			t.name AS team_name,
+			t.name_zh AS team_name_zh,
 			t.short_name AS team_short_name,
 			t.slug AS team_slug,
 			t.logo_url AS team_logo_url`).
@@ -192,6 +195,7 @@ func (r *GormMatchRepository) GetPlayerRatingSummary(matchID uint, limit int) ([
 			p.avatar_url,
 			t.id AS team_id,
 			t.name AS team_name,
+			t.name_zh AS team_name_zh,
 			t.short_name AS team_short_name,
 			t.slug AS team_slug,
 			t.logo_url AS team_logo_url,

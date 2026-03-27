@@ -63,7 +63,7 @@ func TestMatchServiceListMatchesEmpty(t *testing.T) {
 		aggregates:  map[uint]repository.MatchAggregateRecord{},
 	})
 
-	result, err := svc.ListMatches(repository.MatchListParams{Page: 1, PageSize: 20})
+	result, err := svc.ListMatches(repository.MatchListParams{Page: 1, PageSize: 20}, "en")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -81,14 +81,18 @@ func TestMatchServiceGetMatchDetailNotFound(t *testing.T) {
 }
 
 func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
+	homeZh := "主队"
+	awayZh := "客队"
+	round := "Matchday 1"
 	match := &model.Match{
 		ID:          1,
 		Competition: "Premier League",
 		Season:      "2024-2025",
 		Status:      model.MatchStatusFinished,
 		KickoffAt:   time.Now(),
-		HomeTeam:    model.Team{ID: 1, Name: "Home", Slug: "home"},
-		AwayTeam:    model.Team{ID: 2, Name: "Away", Slug: "away"},
+		Round:       &round,
+		HomeTeam:    model.Team{ID: 1, Name: "Home", NameZh: &homeZh, Slug: "home"},
+		AwayTeam:    model.Team{ID: 2, Name: "Away", NameZh: &awayZh, Slug: "away"},
 	}
 	svc := NewMatchService(&fakeMatchRepository{
 		matchDetail: match,
@@ -103,6 +107,7 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 				PlayerSlug: "bukayo-saka",
 				TeamID:     1,
 				TeamName:   "Home",
+				TeamNameZh: &homeZh,
 				TeamSlug:   "home",
 			},
 		},
@@ -123,5 +128,14 @@ func TestMatchServiceGetMatchDetailSuccess(t *testing.T) {
 	}
 	if result.AvailableTags[0].Name != "热血" {
 		t.Fatalf("expected zh tag label, got %#v", result.AvailableTags[0])
+	}
+	if result.HomeTeam.Name != "主队" || result.AwayTeam.Name != "客队" {
+		t.Fatalf("expected localized team names, got %#v %#v", result.HomeTeam, result.AwayTeam)
+	}
+	if result.Competition != "英超" {
+		t.Fatalf("expected localized competition, got %q", result.Competition)
+	}
+	if result.Round == nil || *result.Round != "第1轮" {
+		t.Fatalf("expected localized round, got %#v", result.Round)
 	}
 }

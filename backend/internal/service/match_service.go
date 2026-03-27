@@ -9,7 +9,7 @@ import (
 )
 
 type MatchService interface {
-	ListMatches(params repository.MatchListParams) (dto.MatchListResponseDTO, error)
+	ListMatches(params repository.MatchListParams, locale string) (dto.MatchListResponseDTO, error)
 	GetMatchDetail(id uint, locale string) (*dto.MatchDetailDTO, error)
 }
 
@@ -21,7 +21,7 @@ func NewMatchService(repo repository.MatchRepository) MatchService {
 	return &matchService{repo: repo}
 }
 
-func (s *matchService) ListMatches(params repository.MatchListParams) (dto.MatchListResponseDTO, error) {
+func (s *matchService) ListMatches(params repository.MatchListParams, locale string) (dto.MatchListResponseDTO, error) {
 	matches, total, err := s.repo.ListMatches(params)
 	if err != nil {
 		return dto.MatchListResponseDTO{}, err
@@ -40,13 +40,13 @@ func (s *matchService) ListMatches(params repository.MatchListParams) (dto.Match
 	for _, match := range matches {
 		items = append(items, dto.MatchListItemDTO{
 			ID:          match.ID,
-			Competition: match.Competition,
+			Competition: localizedCompetitionName(match.Competition, locale),
 			Season:      match.Season,
-			Round:       match.Round,
+			Round:       localizedRound(match.Round, locale),
 			Status:      string(match.Status),
 			KickoffAt:   match.KickoffAt,
-			HomeTeam:    toTeamSummaryDTO(match.HomeTeam),
-			AwayTeam:    toTeamSummaryDTO(match.AwayTeam),
+			HomeTeam:    toTeamSummaryDTO(match.HomeTeam, locale),
+			AwayTeam:    toTeamSummaryDTO(match.AwayTeam, locale),
 			HomeScore:   match.HomeScore,
 			AwayScore:   match.AwayScore,
 			Aggregates:  toAggregateDTO(aggregates[match.ID]),
@@ -106,7 +106,7 @@ func (s *matchService) GetMatchDetail(id uint, locale string) (*dto.MatchDetailD
 			AvatarURL: item.AvatarURL,
 			Team: dto.TeamSummaryDTO{
 				ID:        item.TeamID,
-				Name:      item.TeamName,
+				Name:      localizedTeamNameValue(item.TeamName, item.TeamNameZh, locale),
 				ShortName: item.TeamShortName,
 				Slug:      item.TeamSlug,
 				LogoURL:   item.TeamLogoURL,
@@ -125,7 +125,7 @@ func (s *matchService) GetMatchDetail(id uint, locale string) (*dto.MatchDetailD
 				AvatarURL: item.AvatarURL,
 				Team: dto.TeamSummaryDTO{
 					ID:        item.TeamID,
-					Name:      item.TeamName,
+					Name:      localizedTeamNameValue(item.TeamName, item.TeamNameZh, locale),
 					ShortName: item.TeamShortName,
 					Slug:      item.TeamSlug,
 					LogoURL:   item.TeamLogoURL,
@@ -158,13 +158,13 @@ func (s *matchService) GetMatchDetail(id uint, locale string) (*dto.MatchDetailD
 
 	return &dto.MatchDetailDTO{
 		ID:            match.ID,
-		Competition:   match.Competition,
+		Competition:   localizedCompetitionName(match.Competition, locale),
 		Season:        match.Season,
-		Round:         match.Round,
+		Round:         localizedRound(match.Round, locale),
 		Status:        string(match.Status),
 		KickoffAt:     match.KickoffAt,
-		HomeTeam:      toTeamSummaryDTO(match.HomeTeam),
-		AwayTeam:      toTeamSummaryDTO(match.AwayTeam),
+		HomeTeam:      toTeamSummaryDTO(match.HomeTeam, locale),
+		AwayTeam:      toTeamSummaryDTO(match.AwayTeam, locale),
 		HomeScore:     match.HomeScore,
 		AwayScore:     match.AwayScore,
 		Venue:         match.Venue,
