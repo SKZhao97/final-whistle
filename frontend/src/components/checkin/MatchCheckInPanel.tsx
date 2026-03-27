@@ -335,23 +335,19 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
               {tagOptions.map((tag) => {
                 const selected = formState.tags.includes(tag.id);
                 return (
-                  <label
+                  <button
                     key={tag.id}
+                    type="button"
+                    onClick={() => toggleTag(tag.id)}
+                    aria-pressed={selected}
                     className={`cursor-pointer rounded-full border px-3 py-1 text-sm transition-colors ${
                       selected
-                        ? "border-primary bg-primary text-primary-foreground"
+                        ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
                         : "border-neutral-300 hover:bg-neutral-50"
                     }`}
                   >
-                    <input
-                      type="checkbox"
-                      checked={selected}
-                      onChange={() => toggleTag(tag.id)}
-                      className="sr-only"
-                      aria-label={`Toggle tag ${tag.name}`}
-                    />
-                    <span>{tag.name}</span>
-                  </label>
+                    {tag.name}
+                  </button>
                 );
               })}
             </div>

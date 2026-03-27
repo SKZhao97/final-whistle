@@ -1,3 +1,5 @@
+// Package service 包含业务逻辑层，负责处理核心业务规则、数据验证和事务管理。
+// 本包包含用户相关的业务服务。
 package service
 
 import (
@@ -9,16 +11,21 @@ import (
 	"gorm.io/gorm"
 )
 
+// UserService 定义了用户相关的业务操作接口。
 type UserService interface {
+	// GetProfileSummary 获取用户资料摘要。
 	GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO, error)
+	// GetCheckInHistory 获取用户签到历史。
 	GetCheckInHistory(userID uint, page, pageSize int) (*dto.UserCheckInHistoryResponseDTO, error)
 }
 
+// userService 是 UserService 接口的实现。
 type userService struct {
 	repo repository.UserRepository
 	now  func() time.Time
 }
 
+// NewUserService 创建并返回一个新的 UserService 实例。
 func NewUserService(repo repository.UserRepository) UserService {
 	return &userService{
 		repo: repo,
@@ -26,7 +33,14 @@ func NewUserService(repo repository.UserRepository) UserService {
 	}
 }
 
+// GetProfileSummary 获取用户资料摘要，包括签到统计、平均评分、最爱球队等信息。
+// 参数:
+//   - userID: 用户ID
+// 返回:
+//   - UserProfileSummaryDTO: 用户资料摘要
+//   - error: 错误信息，如用户不存在或数据库错误
 func (s *userService) GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO, error) {
+	// 获取用户资料摘要记录，recentSince为30天前的时间点
 	record, err := s.repo.GetUserProfileSummary(userID, s.now().AddDate(0, 0, -30))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -68,7 +82,16 @@ func (s *userService) GetProfileSummary(userID uint) (*dto.UserProfileSummaryDTO
 	return result, nil
 }
 
+// GetCheckInHistory 获取用户签到历史，支持分页。
+// 参数:
+//   - userID: 用户ID
+//   - page: 页码，小于1时默认1
+//   - pageSize: 每页大小，小于1时默认20，大于50时限制为50
+// 返回:
+//   - UserCheckInHistoryResponseDTO: 分页签到历史响应
+//   - error: 错误信息，如数据库错误
 func (s *userService) GetCheckInHistory(userID uint, page, pageSize int) (*dto.UserCheckInHistoryResponseDTO, error) {
+	// 验证和规范化分页参数
 	if page < 1 {
 		page = 1
 	}

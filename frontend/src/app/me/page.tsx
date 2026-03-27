@@ -12,6 +12,11 @@ import {
 } from "@/components/profile/profilePageUtils";
 import type { UserCheckInHistoryResponse, UserProfileSummary } from "@/types/api";
 
+/**
+ * 个人资料页面组件。
+ * 显示用户个人资料摘要和签到历史。
+ * 需要用户认证，未认证用户会看到登录提示。
+ */
 export default function MePage() {
   const { status, user, refresh } = useAuth();
   const [profile, setProfile] = useState<UserProfileSummary | null>(null);

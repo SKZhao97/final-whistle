@@ -9,61 +9,61 @@ import (
 func SeedTags(db *gorm.DB) error {
 	tags := []model.Tag{
 		{
-			Name:      "热血",
+			Name:      "Intense",
 			Slug:      "hot-blooded",
 			SortOrder: 1,
 			IsActive:  true,
 		},
 		{
-			Name:      "无聊",
+			Name:      "Boring",
 			Slug:      "boring",
 			SortOrder: 2,
 			IsActive:  true,
 		},
 		{
-			Name:      "窒息",
+			Name:      "Tense",
 			Slug:      "suffocating",
 			SortOrder: 3,
 			IsActive:  true,
 		},
 		{
-			Name:      "经典",
+			Name:      "Classic",
 			Slug:      "classic",
 			SortOrder: 4,
 			IsActive:  true,
 		},
 		{
-			Name:      "离谱",
+			Name:      "Wild",
 			Slug:      "unbelievable",
 			SortOrder: 5,
 			IsActive:  true,
 		},
 		{
-			Name:      "可惜",
+			Name:      "Heartbreaking",
 			Slug:      "regrettable",
 			SortOrder: 6,
 			IsActive:  true,
 		},
 		{
-			Name:      "统治力",
+			Name:      "Dominant",
 			Slug:      "dominance",
 			SortOrder: 7,
 			IsActive:  true,
 		},
 		{
-			Name:      "折磨",
+			Name:      "Painful",
 			Slug:      "torture",
 			SortOrder: 8,
 			IsActive:  true,
 		},
 		{
-			Name:      "逆转",
+			Name:      "Comeback",
 			Slug:      "comeback",
 			SortOrder: 9,
 			IsActive:  true,
 		},
 		{
-			Name:      "宿命感",
+			Name:      "Destiny",
 			Slug:      "destiny",
 			SortOrder: 10,
 			IsActive:  true,
@@ -71,7 +71,11 @@ func SeedTags(db *gorm.DB) error {
 	}
 
 	for _, tag := range tags {
-		if err := db.FirstOrCreate(&tag, model.Tag{Slug: tag.Slug}).Error; err != nil {
+		if err := db.Where("slug = ?", tag.Slug).Assign(model.Tag{
+			Name:      tag.Name,
+			SortOrder: tag.SortOrder,
+			IsActive:  tag.IsActive,
+		}).FirstOrCreate(&tag).Error; err != nil {
 			return err
 		}
 	}
