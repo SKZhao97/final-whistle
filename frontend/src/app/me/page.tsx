@@ -186,13 +186,13 @@ export default function MePage() {
         accent="field"
       >
         <div className="mt-6 grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[1.6rem] border border-[var(--fw-line)] bg-[var(--fw-surface)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]">
+          <div className="rounded-[1.6rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]">
             <p className="match-eyebrow">{t("profile.identity.title")}</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--fw-ink)]">{profile.user.name}</h2>
             <p className="mt-3 text-sm leading-6 text-[var(--fw-muted)]">{t("profile.identity.subtitle")}</p>
           </div>
 
-          <div className="rounded-[1.6rem] border border-[var(--fw-line)] bg-[var(--fw-surface)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]">
+          <div className="rounded-[1.6rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="match-eyebrow">{t("profile.memory.title")}</p>
@@ -238,7 +238,7 @@ export default function MePage() {
         {historyError ? <p className="mt-2 text-sm text-red-700">{historyError}</p> : null}
 
         {history.items.length === 0 ? (
-          <div className="mt-6 rounded-[1.5rem] border border-dashed border-[var(--fw-line)] bg-[var(--fw-surface)] p-6">
+          <div className="mt-6 rounded-[1.5rem] border border-dashed border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6">
             <p className="text-sm leading-6 text-[var(--fw-muted)]">{t("profile.empty")}</p>
             <Link
               href="/matches"
@@ -252,7 +252,7 @@ export default function MePage() {
             {history.items.map((item) => (
               <article
                 key={item.id}
-                className="rounded-[1.5rem] border border-[var(--fw-line)] bg-[var(--fw-surface)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]"
+                className="rounded-[1.5rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="space-y-3">
@@ -281,7 +281,7 @@ export default function MePage() {
                   </div>
                   <Link
                     href={`/matches/${item.matchId}`}
-                    className="inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-white px-4 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)]"
+                    className="inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-[var(--fw-paper-strong)] px-4 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)]"
                   >
                     {t("profile.openRecord")}
                   </Link>
@@ -302,7 +302,7 @@ export default function MePage() {
             type="button"
             onClick={() => setPage((current) => Math.max(1, current - 1))}
             disabled={!pagination.canGoPrev}
-            className="inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-white px-4 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-[var(--fw-paper-strong)] px-4 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t("profile.pagination.previous")}
           </button>
@@ -313,7 +313,7 @@ export default function MePage() {
             type="button"
             onClick={() => setPage((current) => current + 1)}
             disabled={!pagination.canGoNext}
-            className="inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-white px-4 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-[var(--fw-paper-strong)] px-4 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t("profile.pagination.next")}
           </button>

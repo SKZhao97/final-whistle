@@ -8,8 +8,8 @@ export default async function Home() {
   const locale = await getServerLocale();
 
   const demoTeams = [
+    { id: 3, name: locale === "zh" ? "阿森纳" : "Arsenal", shortName: "ARS", slug: "arsenal" },
     { id: 1, name: locale === "zh" ? "曼城" : "Manchester City", shortName: "MCI", slug: "manchester-city" },
-    { id: 2, name: locale === "zh" ? "利物浦" : "Liverpool", shortName: "LIV", slug: "liverpool" },
   ];
 
   return (
@@ -23,7 +23,15 @@ export default async function Home() {
             </div>
             <div className="space-y-4">
               <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-[var(--fw-ink)] sm:text-5xl lg:text-6xl">
-                {translate(locale, "home.title")}
+                {locale === "zh" ? (
+                  <>
+                    欢迎来到 <span className="text-[var(--fw-field-700)]">Final Whistle</span>
+                  </>
+                ) : (
+                  <>
+                    Welcome to <span className="text-[var(--fw-field-700)]">Final Whistle</span>
+                  </>
+                )}
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-[var(--fw-muted)]">
                 {translate(locale, "home.subtitle")}
@@ -40,7 +48,7 @@ export default async function Home() {
           </div>
 
           <div className="rounded-[1.8rem] border border-[var(--fw-line)] bg-[color:var(--fw-surface)]/86 p-6 shadow-[0_24px_55px_rgba(16,31,24,0.08)]">
-            <p className="match-eyebrow">{locale === "zh" ? "今晚的记录卡" : "Tonight's record card"}</p>
+            <p className="match-eyebrow">{translate(locale, "home.demoCard.eyebrow")}</p>
             <div className="mt-5 grid gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -58,9 +66,7 @@ export default async function Home() {
               </div>
               <div className="rounded-[1.2rem] border border-[var(--fw-line)] bg-[var(--fw-paper-strong)] p-4">
                 <p className="text-sm leading-6 text-[var(--fw-ink-soft)]">
-                  {locale === "zh"
-                    ? "终场后，留下你的评分、标签和短评，把这场比赛真正收进个人档案。"
-                    : "After the final whistle, save your ratings, tags, and short review so the match becomes part of your archive."}
+                  {translate(locale, "home.demoCard.body")}
                 </p>
               </div>
             </div>

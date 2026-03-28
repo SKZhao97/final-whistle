@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final Whistle Wordmark Directions</title>
+    <style>
+      :root {
+        --paper: #f3eee3;
+        --panel: rgba(255, 255, 255, 0.8);
+        --ink: #122019;
+        --muted: #607165;
+        --line: rgba(18, 32, 25, 0.1);
+        --field: #204f3b;
+        --field-soft: #8fb89f;
+        --gold: #b28b46;
+        --night: #111914;
+        --night-ink: #eef6ef;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(143, 184, 159, 0.22), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(178, 139, 70, 0.14), transparent 26%),
+          linear-gradient(180deg, #fbf7ef 0%, var(--paper) 56%, #e7decc 100%);
+      }
+
+      .shell {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 48px 28px 64px;
+      }
+
+      .intro {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 36px;
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--field);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(38px, 6vw, 64px);
+        letter-spacing: -0.07em;
+        line-height: 0.94;
+      }
+
+      .subtitle {
+        max-width: 760px;
+        font-size: 16px;
+        line-height: 1.72;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        gap: 22px;
+      }
+
+      @media (min-width: 980px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 34px;
+        padding: 30px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(251, 246, 238, 0.86)),
+          var(--panel);
+        box-shadow:
+          0 24px 56px rgba(16, 31, 24, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.84);
+      }
+
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        border: 1px solid rgba(32, 79, 59, 0.14);
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--field);
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .direction {
+        display: grid;
+        gap: 4px;
+        text-align: right;
+      }
+
+      .direction small {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .direction strong {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.06em;
+      }
+
+      .hero-mark {
+        display: grid;
+        gap: 18px;
+      }
+
+      .brand-showcase {
+        display: grid;
+        gap: 18px;
+        padding: 24px;
+        border-radius: 28px;
+        border: 1px solid rgba(32, 79, 59, 0.1);
+      }
+
+      .brand-showcase--light {
+        background:
+          radial-gradient(circle at top right, rgba(143, 184, 159, 0.18), transparent 28%),
+          rgba(255, 255, 255, 0.72);
+      }
+
+      .brand-showcase--dark {
+        background:
+          radial-gradient(circle at top right, rgba(143, 184, 159, 0.14), transparent 32%),
+          linear-gradient(180deg, #18231d 0%, #111914 100%);
+        color: var(--night-ink);
+      }
+
+      .header-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        align-self: start;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(18, 32, 25, 0.06);
+      }
+
+      .brand-showcase--dark .header-chip {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .mark-mini {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(180deg, #234e3c, #11251b);
+        color: white;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .brand-showcase--dark .mark-mini {
+        background: linear-gradient(180deg, #e6f4e9, #cbe4d2);
+        color: #132119;
+      }
+
+      .wordmark {
+        display: grid;
+        gap: 2px;
+        line-height: 1;
+      }
+
+      .wordmark span {
+        font-size: 10px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(18, 32, 25, 0.54);
+      }
+
+      .brand-showcase--dark .wordmark span {
+        color: rgba(238, 246, 239, 0.6);
+      }
+
+      .wordmark strong {
+        font-size: 20px;
+        letter-spacing: -0.06em;
+      }
+
+      .editorial {
+        display: grid;
+        gap: 8px;
+      }
+
+      .editorial small {
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+
+      .editorial h2 {
+        margin: 0;
+        font-size: clamp(38px, 5vw, 58px);
+        line-height: 0.88;
+        letter-spacing: -0.085em;
+      }
+
+      .editorial .accent {
+        color: var(--field);
+      }
+
+      .brand-showcase--dark .editorial .accent {
+        color: #d8f1df;
+      }
+
+      .signature {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .seal {
+        width: 62px;
+        height: 62px;
+        border-radius: 20px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(32, 79, 59, 0.14);
+        background:
+          radial-gradient(circle at 30% 30%, rgba(143, 184, 159, 0.18), transparent 48%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(234, 242, 236, 0.92));
+      }
+
+      .seal svg {
+        width: 42px;
+        height: 42px;
+      }
+
+      .brand-showcase--dark .seal {
+        border-color: rgba(216, 241, 223, 0.16);
+        background:
+          radial-gradient(circle at 30% 30%, rgba(143, 184, 159, 0.18), transparent 48%),
+          linear-gradient(180deg, rgba(31, 44, 37, 0.96), rgba(20, 30, 24, 0.96));
+      }
+
+      .signature-copy {
+        display: grid;
+        gap: 4px;
+      }
+
+      .signature-copy small {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .brand-showcase--dark .signature-copy small {
+        color: rgba(238, 246, 239, 0.62);
+      }
+
+      .signature-copy strong {
+        font-size: 34px;
+        letter-spacing: -0.07em;
+      }
+
+      .editorial-refined {
+        display: grid;
+        gap: 14px;
+      }
+
+      .editorial-refined .super {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .editorial-refined .super::before {
+        content: "";
+        width: 28px;
+        height: 1px;
+        background: rgba(18, 32, 25, 0.16);
+      }
+
+      .brand-showcase--dark .editorial-refined .super {
+        color: rgba(238, 246, 239, 0.64);
+      }
+
+      .brand-showcase--dark .editorial-refined .super::before {
+        background: rgba(238, 246, 239, 0.22);
+      }
+
+      .title-lockup {
+        display: grid;
+        gap: 0;
+      }
+
+      .title-lockup .line-one,
+      .title-lockup .line-two {
+        display: block;
+        font-size: clamp(42px, 5.4vw, 64px);
+        line-height: 0.86;
+        letter-spacing: -0.09em;
+        font-weight: 680;
+      }
+
+      .title-lockup .line-two {
+        color: var(--field);
+      }
+
+      .brand-showcase--dark .title-lockup .line-two {
+        color: #d6f1dd;
+      }
+
+      .editorial-refined .note {
+        max-width: 32rem;
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--muted);
+      }
+
+      .brand-showcase--dark .editorial-refined .note {
+        color: rgba(238, 246, 239, 0.68);
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .body-copy {
+        font-size: 15px;
+        line-height: 1.72;
+        color: var(--muted);
+      }
+
+      .bullets {
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+      }
+
+      .bullets li {
+        position: relative;
+        padding-left: 18px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .bullets li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--gold);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="intro">
+        <div class="eyebrow">Spec8 Brand Direction</div>
+        <h1>Final Whistle Brand System Reset</h1>
+        <p class="subtitle">
+          These directions move away from “draw a whistle icon” and toward a brand system that can feel premium, editorial, and distinctive in the header.
+        </p>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <div class="card-head">
+            <span class="tag">Wordmark First</span>
+            <div class="direction">
+              <small>Direction A</small>
+              <strong>Editorial House</strong>
+            </div>
+          </div>
+
+          <div class="hero-mark">
+            <div class="brand-showcase brand-showcase--light">
+              <div class="header-chip">
+                <div class="mark-mini">FW</div>
+                <div class="wordmark">
+                  <span>Post-Match Archive</span>
+                  <strong>Final Whistle</strong>
+                </div>
+              </div>
+              <div class="editorial-refined">
+                <div class="super">Season Archive</div>
+                <div class="title-lockup">
+                  <span class="line-one">Final</span>
+                  <span class="line-two">Whistle</span>
+                </div>
+                <p class="note">
+                  A calmer, more premium wordmark system where the name itself carries the identity and the mark stays supportive.
+                </p>
+              </div>
+            </div>
+
+            <div class="brand-showcase brand-showcase--dark">
+              <div class="header-chip">
+                <div class="mark-mini">FW</div>
+                <div class="wordmark">
+                  <span>Post-Match Archive</span>
+                  <strong>Final Whistle</strong>
+                </div>
+              </div>
+              <div class="editorial-refined">
+                <div class="super">Season Archive</div>
+                <div class="title-lockup">
+                  <span class="line-one">Final</span>
+                  <span class="line-two">Whistle</span>
+                </div>
+                <p class="note">
+                  The header feels more like a football journal or studio imprint than a generic sports interface.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p class="body-copy">
+            The logo stops trying to “sell” the football idea in the icon. The brand identity comes from the wordmark, spacing, and confidence of the typography.
+          </p>
+
+          <ul class="bullets">
+            <li>Feels more premium because the wordmark does the heavy lifting.</li>
+            <li>Lets the product look more like a serious football publication than an app icon.</li>
+            <li>The `FW` mark becomes a restrained utility badge instead of the star.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="tag">Signature Badge</span>
+            <div class="direction">
+              <small>Direction B</small>
+              <strong>Archive Signature</strong>
+            </div>
+          </div>
+
+          <div class="hero-mark">
+            <div class="brand-showcase brand-showcase--light">
+              <div class="signature">
+                <div class="seal">
+                  <svg viewBox="0 0 42 42" fill="none" aria-hidden="true">
+                    <path d="M11 23.5C11 18.25 15.25 14 20.5 14H27.5C28.88 14 30 15.12 30 16.5V25.5C30 26.88 28.88 28 27.5 28H20.5C15.25 28 11 23.75 11 18.5V23.5Z" fill="#204F3B"/>
+                    <circle cx="13.5" cy="29.5" r="4.6" fill="#B28B46"/>
+                    <circle cx="13.5" cy="29.5" r="1.5" fill="#F5F0E6"/>
+                    <path d="M30 15L34 10.5" stroke="#204F3B" stroke-width="2.4" stroke-linecap="round"/>
+                    <path d="M33 19L38 16" stroke="#204F3B" stroke-width="2.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="signature-copy">
+                  <small>Final Signal</small>
+                  <strong>Final Whistle</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="brand-showcase brand-showcase--dark">
+              <div class="signature">
+                <div class="seal">
+                  <svg viewBox="0 0 42 42" fill="none" aria-hidden="true">
+                    <path d="M11 23.5C11 18.25 15.25 14 20.5 14H27.5C28.88 14 30 15.12 30 16.5V25.5C30 26.88 28.88 28 27.5 28H20.5C15.25 28 11 23.75 11 18.5V23.5Z" fill="#E5F1E7"/>
+                    <circle cx="13.5" cy="29.5" r="4.6" fill="#D7B670"/>
+                    <circle cx="13.5" cy="29.5" r="1.5" fill="#162119"/>
+                    <path d="M30 15L34 10.5" stroke="#E5F1E7" stroke-width="2.4" stroke-linecap="round"/>
+                    <path d="M33 19L38 16" stroke="#E5F1E7" stroke-width="2.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="signature-copy">
+                  <small>Final Signal</small>
+                  <strong>Final Whistle</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="body-copy">
+            The icon stays, but it becomes a quieter seal attached to a stronger signature-style wordmark. The brand starts to feel authored instead of illustrated.
+          </p>
+
+          <ul class="bullets">
+            <li>More branded than a generic sports badge, but still carries a distinct symbol.</li>
+            <li>Feels more collectible and archive-like than the current logo.</li>
+            <li>Gives you a path to a full identity system without leaning on a cartoonish icon.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

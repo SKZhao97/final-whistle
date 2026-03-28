@@ -155,7 +155,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
               {normalizedMatch.playerRatings.map((rating) => (
                 <div
                   key={rating.player.id}
-                  className="flex items-center justify-between gap-4 rounded-[1.2rem] border border-[var(--fw-line)] bg-white/80 px-4 py-4"
+                  className="flex items-center justify-between gap-4 rounded-[1.2rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_92%,transparent)] px-4 py-4 shadow-[0_18px_35px_rgba(16,31,24,0.05)]"
                 >
                   <div className="flex items-center gap-3">
                     <TeamCrest team={rating.player.team} size="sm" />
@@ -199,7 +199,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
             {normalizedMatch.recentReviews.map((review) => (
               <article
                 key={review.id}
-                className="rounded-[1.35rem] border border-[var(--fw-line)] bg-white/82 p-5 shadow-[0_18px_35px_rgba(16,31,24,0.04)]"
+                className="rounded-[1.35rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_92%,transparent)] p-5 shadow-[0_18px_35px_rgba(16,31,24,0.05)]"
               >
                 <div className="flex items-center justify-between gap-4">
                   <p className="font-medium text-[var(--fw-ink)]">{review.user.name}</p>
@@ -226,7 +226,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
 
 function SnapshotStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.25rem] border border-[var(--fw-line)] bg-white/82 p-4">
+    <div className="rounded-[1.25rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_92%,transparent)] p-4 shadow-[0_18px_35px_rgba(16,31,24,0.05)]">
       <p className="text-xs uppercase tracking-[0.18em] text-[var(--fw-muted)]">{label}</p>
       <p className="mt-3 text-2xl font-semibold tracking-tight text-[var(--fw-field-900)]">{value}</p>
     </div>

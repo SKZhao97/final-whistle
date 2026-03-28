@@ -246,7 +246,10 @@ export default function MatchCheckInPanel({ match }: MatchCheckInPanelProps) {
           {recordError ? <p className="text-sm text-red-600">{recordError}</p> : null}
 
           {editing ? (
-            <form onSubmit={handleSubmit} className="space-y-6 rounded-[1.5rem] border border-[var(--fw-line)] bg-white/88 p-6">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6 rounded-[1.5rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]"
+            >
               <div className="space-y-3">
                 <p className="match-eyebrow">{t("checkin.editingEyebrow")}</p>
                 <h3 className="text-2xl font-semibold tracking-tight text-[var(--fw-ink)]">
@@ -541,7 +544,7 @@ function SavedCheckInSummary({
         ) : null}
       </StateCard>
 
-      <div className="rounded-[1.5rem] border border-[var(--fw-line)] bg-white/88 p-6">
+      <div className="rounded-[1.5rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="match-eyebrow">{translate(locale, "checkin.playerNotes")}</p>
@@ -607,7 +610,7 @@ function StateCard({
   children?: ReactNode;
 }) {
   return (
-    <div className="rounded-[1.5rem] border border-[var(--fw-line)] bg-white/88 p-6">
+    <div className="rounded-[1.5rem] border border-[var(--fw-line)] bg-[color-mix(in_srgb,var(--fw-surface)_94%,transparent)] p-6 shadow-[0_18px_40px_rgba(16,31,24,0.08)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-3">
           <p className="match-eyebrow">{eyebrow}</p>
@@ -669,10 +672,10 @@ function ErrorText({ text }: { text: string }) {
 }
 
 const inputClass =
-  "w-full rounded-[1rem] border border-[var(--fw-line)] bg-white px-4 py-3 text-[var(--fw-ink)] outline-none transition focus:border-[var(--fw-field-500)] focus:ring-2 focus:ring-[rgba(110,143,114,0.18)]";
+  "w-full rounded-[1rem] border border-[var(--fw-line)] bg-[var(--fw-paper-strong)] px-4 py-3 text-[var(--fw-ink)] outline-none transition focus:border-[var(--fw-field-500)] focus:ring-2 focus:ring-[rgba(110,143,114,0.18)]";
 
 const primaryButtonClass =
-  "inline-flex items-center justify-center rounded-full bg-[var(--fw-field-900)] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[var(--fw-field-700)] disabled:opacity-50";
+  "inline-flex items-center justify-center rounded-full bg-[var(--fw-control-active)] px-5 py-3 text-sm font-medium text-[var(--fw-control-active-ink)] transition-colors hover:opacity-92 disabled:opacity-50";
 
 const secondaryButtonClass =
-  "inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-white px-5 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)]";
+  "inline-flex items-center justify-center rounded-full border border-[var(--fw-line)] bg-[var(--fw-paper-strong)] px-5 py-3 text-sm font-medium text-[var(--fw-ink-soft)] transition-colors hover:bg-[var(--fw-field-100)]";

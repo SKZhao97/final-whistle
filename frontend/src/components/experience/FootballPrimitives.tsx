@@ -9,6 +9,7 @@ type SectionShellProps = {
   children: ReactNode;
   accent?: "field" | "paper";
   className?: string;
+  headerAside?: ReactNode;
 };
 
 export function SectionShell({
@@ -18,18 +19,24 @@ export function SectionShell({
   children,
   accent = "paper",
   className = "",
+  headerAside,
 }: SectionShellProps) {
   return (
     <section
       className={`match-shell ${accent === "field" ? "match-shell--field" : ""} ${className}`.trim()}
     >
-      <header className="space-y-2">
-        {eyebrow ? <p className="match-eyebrow">{eyebrow}</p> : null}
-        <div className="space-y-1">
-          <h2 className="text-xl font-semibold tracking-tight text-[var(--fw-ink)]">{title}</h2>
-          {description ? (
-            <p className="max-w-3xl text-sm leading-6 text-[var(--fw-muted)]">{description}</p>
-          ) : null}
+      <header className="space-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            {eyebrow ? <p className="match-eyebrow">{eyebrow}</p> : null}
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold tracking-tight text-[var(--fw-ink)]">{title}</h2>
+              {description ? (
+                <p className="max-w-3xl text-sm leading-6 text-[var(--fw-muted)]">{description}</p>
+              ) : null}
+            </div>
+          </div>
+          {headerAside ? <div className="min-w-[13rem] max-w-full">{headerAside}</div> : null}
         </div>
       </header>
       {children}
@@ -40,24 +47,19 @@ export function SectionShell({
 export function BrandMark() {
   return (
     <div className="brand-mark" aria-hidden="true">
-      <span className="brand-mark__outer" />
-      <span className="brand-mark__mid" />
-      <span className="brand-mark__arc" />
-      <span className="brand-mark__arc brand-mark__arc--bottom" />
-      <span className="brand-mark__spot" />
+      <span className="brand-mark__letters">FW</span>
     </div>
   );
 }
 
 export function Wordmark() {
   return (
-    <div className="space-y-0.5 leading-none">
-      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[var(--fw-field-700)]">
+    <div className="brand-wordmark" aria-label="Final Whistle">
+      <p className="brand-wordmark__eyebrow">
         Match Archive
       </p>
-      <p className="font-semibold tracking-[-0.04em] text-[var(--fw-ink)] sm:text-[1.1rem]">
-        Final <span className="text-[var(--fw-field-700)]">Whistle</span>
-      </p>
+      <p className="brand-wordmark__line">Final</p>
+      <p className="brand-wordmark__line brand-wordmark__line--accent">Whistle</p>
     </div>
   );
 }
